@@ -1,0 +1,20 @@
+# alter this depending on your pc. defaults to slow
+chosen_speed: fast
+
+# zoom launching method. choose between executable and startMenu. defaults to startMenu
+launch_method: executable
+
+# do not touch unless you know what you are doing
+slow:
+    duration: 10
+standard:
+    duration: 5
+fast:
+    duration: 2
+
+pause_multiplier: 0.2
+
+# maximum time (mins) after the class starting that you want a class to still be launched
+maxClassTimeDiff: 5
+
+zoom_executable_location: C:\Users\dakonwindows\AppData\Roaming\Zoom\bin\Zoom.exe
