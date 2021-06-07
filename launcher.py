@@ -98,11 +98,10 @@ if __name__ == '__main__':
         except yaml.YAMLError as exc:
             print(exc)
 
-
     print("Class to join, choose the number:")
     i = 1
     for cls in CLASS_INFO.items():
-        print(f"[{i}] {cls[0]}")
+        print(f"[{i}] {cls[0]}: {cls[1]['code']}")
         i += 1
 
     className = int(input(f">"))
