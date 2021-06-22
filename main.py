@@ -41,16 +41,16 @@ def main():
     pag.PAUSE = round(0.2 * STANDARD_WAIT, 3)
 
     for cls in CLASS_INFO.items():
-        # if currTime == cls[1]["time_weekday"]:
-        if True:
-            isConfirmed = pag.confirm(
-                text=f'Join {cls[0]} class?', title=f'Confirm joining of {cls[0]} class', buttons=['OK', 'Cancel'])
+        if currTime == cls[1]["time_weekday"]:
+        # if True:
+            # isConfirmed = pag.confirm(
+            #     text=f'Join {cls[0]} class?', title=f'Confirm joining of {cls[0]} class', buttons=['OK', 'Cancel'])
 
-            if isConfirmed == "OK":
-                code_to_use, password_to_use = getCodeAndPass(cls[0])
-                print(
-                    f"\nUsing {cls[0]} class information \n  Code: {code_to_use} \n  Pass: {password_to_use}")
-                launcherMain(code_to_use, password_to_use)
+            # if isConfirmed == "OK":
+            code_to_use, password_to_use = getCodeAndPass(cls[0])
+            print(
+                f"\nUsing {cls[0]} class information \n  Code: {code_to_use} \n  Pass: {password_to_use}")
+            launcherMain(code_to_use, password_to_use)
 
 
 schedule.every(30).seconds.do(main)
