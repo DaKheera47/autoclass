@@ -3,53 +3,56 @@ import time
 import os
 import yaml
 import sys
+from termcolor import cprint
+import json
+import cursor
+cursor.hide()
 
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
-    print(r"""
- ____        _    _       ____              _       ____ _                 _                           _
-|  _ \  __ _| | _( )___  |  _ \  __ _ _ __ | | __  / ___| | __ _ ___ ___  | |    __ _ _   _ _ __   ___| |__   ___ _ __
-| | | |/ _` | |/ /// __| | | | |/ _` | '_ \| |/ / | |   | |/ _` / __/ __| | |   / _` | | | | '_ \ / __| '_ \ / _ \ '__|
-| |_| | (_| |   <  \__ \ | |_| | (_| | | | |   <  | |___| | (_| \__ \__ \ | |__| (_| | |_| | | | | (__| | | |  __/ |
-|____/ \__,_|_|\_\ |___/ |____/ \__,_|_| |_|_|\_\  \____|_|\__,_|___/___/ |_____\__,_|\__,_|_| |_|\___|_| |_|\___|_|
-""")
 
-
-def findImage(imageUrl, message, confidence):
-    i = 1
-
-    while True:
-        time.sleep(1)
+    # to show preview of all classes to join
+    with open("classes.yaml", 'r') as stream:
         try:
-            joinMeetingX, joinMeetingY = pag.locateCenterOnScreen(
-                imageUrl, confidence=confidence)
-        except TypeError:
-            print(f"{message} (attempts: {i})", end="\r")
-            i += 1
-            continue
-        break
+            CLASS_INFO = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
 
-    clear()
-    return (joinMeetingX, joinMeetingY)
+    cprint("""
+    ______  _____   _____  _______             _______ _     _ __   _ _______ _     _ _______  ______    
+     ____/ |     | |     | |  |  |      |      |_____| |     | | \  | |       |_____| |______ |_____/    
+    /_____ |_____| |_____| |  |  |      |_____ |     | |_____| |  \_| |_____  |     | |______ |    \_    
+                                                                                                         
+    ______  __   __      ______  _______ _     _ _     _ _______ _______  ______ _______                 
+    |_____]   \_/        |     \ |_____| |____/  |_____| |______ |______ |_____/ |_____|                 
+    |_____]    |         |_____/ |     | |    \_ |     | |______ |______ |    \_ |     |                 
+                                                                                                         
+""", "green")
+    cprint(f"CLASS LIST", "grey", attrs=["bold"])
+
+    for cls in list(CLASS_INFO.keys()):
+        print(f"{cls} => {list(CLASS_INFO[cls].values())[1]}")
 
 
-def checkAbsence(imageUrl, message):
+def findImage(imageUrl, message, timeout, confidence=0.8):
     i = 1
-
     while True:
-        location = pag.locateOnScreen(imageUrl)
-
-        if location == None:
+        if i <= timeout:
+            try:
+                x, y = pag.locateCenterOnScreen(
+                    imageUrl, confidence=confidence)
+            except TypeError:
+                time.sleep(1)
+                print(f"{message} (Time Elapsed: {i}s)", end="\r")
+                i += 1
+                continue
             break
         else:
-            print(
-                f"{message} (attempts: {i})", end="\r")
-
-        time.sleep(5)
-        i += 1
+            return (-1, -1)
 
     clear()
+    return (x, y)
 
 
 def enterTextInput(x, y, text, message):
@@ -60,7 +63,7 @@ def enterTextInput(x, y, text, message):
 
 
 def main(code, password):
-    pag.PAUSE = 1
+    pag.PAUSE = 0.6
     globalConfidence = 0.8
     # start button
     pag.press("winleft")
@@ -70,27 +73,42 @@ def main(code, password):
     pag.press("enter")
 
     # locate join button on zoom
-    pag.click(findImage("joinBtn.png",
-              "Join button not found... Searching again", globalConfidence))
+    x, y = findImage(
+        "joinBtn.png", "Searching for Join Button", timeout=1 * 10, confidence=globalConfidence)
+    if x != -1 and y != -1:
+        pag.click(x, y)
+    else:
+        return
 
     # enter code into meeting id field
-    joinMeetingX, joinMeetingY = findImage(
-        "joinMeeting.png", "Join Meeting button not found... Searching again", globalConfidence)
-    enterTextInput(joinMeetingX, joinMeetingY + 60, code, "Code entered!")
+    x, y = findImage(
+        "joinMeeting.png", "Searching for meeting ID input field", timeout=1 * 10, confidence=globalConfidence)
+    if x != -1 and y != -1:
+        enterTextInput(x, y + 60, code, "Code entered!")
+    else:
+        return
 
     # enter password into password field
-    enterPassX, enterPassY = findImage(
-        "enterMeetingPw.png", "Enter Meeting Password text not found... Searching again", globalConfidence)
-    enterTextInput(enterPassX, enterPassY + 60, password, "Password entered!")
+    x, y = findImage(
+        "enterMeetingPw.png", "Searching for password field", timeout=1 * 10, confidence=globalConfidence)
+    if x != -1 and y != -1:
+        enterTextInput(x, y + 60, password, "Password entered!")
+    else:
+        return
 
     # locate join with computer audio button on zoom
-    pag.click(findImage("joinWithComputerAudioBtn.png",
-                        "Have not been accepted into class yet... trying again", globalConfidence))
+    x, y = findImage("joinWithComputerAudioBtn.png",
+                     "Have not been accepted into class", timeout=1 * 10, confidence=globalConfidence)
+    if x != -1 and y != -1:
+        pag.click(x, y)
+    else:
+        return
 
     # force full screen zoom
     pag.hotkey("winleft", "up")
 
 
+# if this file is ran directly
 if __name__ == '__main__':
     with open("classes.yaml", 'r') as stream:
         try:
@@ -98,18 +116,22 @@ if __name__ == '__main__':
         except yaml.YAMLError as exc:
             print(exc)
 
-    print("Class to join, choose the number:")
+    print("""
+┌─┐┬ ┬┌─┐┌─┐┌─┐┌─┐  ┌─┐┬  ┌─┐┌─┐┌─┐
+│  ├─┤│ ││ │└─┐├┤   │  │  ├─┤└─┐└─┐
+└─┘┴ ┴└─┘└─┘└─┘└─┘  └─┘┴─┘┴ ┴└─┘└─┘""")
+
     i = 1
     for cls in CLASS_INFO.items():
         print(f"[{i}] {cls[0]}: {cls[1]['code']}")
         i += 1
 
-    className = int(input(f">"))
+    className = input(f"=>>")
 
     try:
-        chosenClass = list(CLASS_INFO.items())[className - 1][1]
-        print(list(CLASS_INFO.items())[className - 1][1])
+        chosenClass = list(CLASS_INFO.items())[int(className) - 1][1]
+        print(list(CLASS_INFO.items())[int(className) - 1][1])
+
+        main(chosenClass["code"], chosenClass["password"])
     except:
         print("Invalid input")
-
-    main(chosenClass["code"], chosenClass["password"])

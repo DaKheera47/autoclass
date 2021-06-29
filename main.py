@@ -5,6 +5,7 @@ from launcher import main as launcherMain
 from launcher import clear
 import schedule
 import datetime
+from termcolor import cprint
 import cursor
 cursor.hide()
 
@@ -34,7 +35,7 @@ def main():
 
     currTime = datetime.datetime.now().strftime("%H:%M")
 
-    print(f"Last checked for class time at {currTime}", end="\r")
+    cprint(f"Time: {currTime}", "cyan", attrs=["bold"], end="\r")
 
     # getting standard wait time based on selection
     STANDARD_WAIT = SETUP[SETUP["chosen_speed"]]["duration"]
@@ -42,7 +43,7 @@ def main():
 
     for cls in CLASS_INFO.items():
         if currTime == cls[1]["time_weekday"]:
-        # if True:
+            # if "10:45" == cls[1]["time_weekday"]:
             # isConfirmed = pag.confirm(
             #     text=f'Join {cls[0]} class?', title=f'Confirm joining of {cls[0]} class', buttons=['OK', 'Cancel'])
 
