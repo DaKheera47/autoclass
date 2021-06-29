@@ -32,7 +32,8 @@ def clear():
     cprint(f"CLASS LIST", "grey", attrs=["bold"])
 
     for cls in list(CLASS_INFO.keys()):
-        print(f"{cls} => {list(CLASS_INFO[cls].values())[1]}")
+        print(
+            f"{cls} => {list(CLASS_INFO[cls].values())[1]} => {list(CLASS_INFO[cls].values())[2]}")
 
 
 def findImage(imageUrl, message, timeout, confidence=0.8):
