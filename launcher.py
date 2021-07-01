@@ -75,7 +75,7 @@ def main(code, password):
 
     # locate join button on zoom
     x, y = findImage(
-        "joinBtn.png", "Searching for Join Button", timeout=1 * 10, confidence=globalConfidence)
+        "joinBtn.png", "Searching for Join Button", timeout=60 * 10, confidence=globalConfidence)
     if x != -1 and y != -1:
         pag.click(x, y)
     else:
@@ -83,7 +83,7 @@ def main(code, password):
 
     # enter code into meeting id field
     x, y = findImage(
-        "joinMeeting.png", "Searching for meeting ID input field", timeout=1 * 10, confidence=globalConfidence)
+        "joinMeeting.png", "Searching for meeting ID input field", timeout=60 * 10, confidence=globalConfidence)
     if x != -1 and y != -1:
         enterTextInput(x, y + 60, code, "Code entered!")
     else:
@@ -91,7 +91,7 @@ def main(code, password):
 
     # enter password into password field
     x, y = findImage(
-        "enterMeetingPw.png", "Searching for password field", timeout=1 * 10, confidence=globalConfidence)
+        "enterMeetingPw.png", "Searching for password field", timeout=60 * 10, confidence=globalConfidence)
     if x != -1 and y != -1:
         enterTextInput(x, y + 60, password, "Password entered!")
     else:
@@ -99,7 +99,7 @@ def main(code, password):
 
     # locate join with computer audio button on zoom
     x, y = findImage("joinWithComputerAudioBtn.png",
-                     "Have not been accepted into class", timeout=1 * 10, confidence=globalConfidence)
+                     "Have not been accepted into class", timeout=60 * 10, confidence=globalConfidence)
     if x != -1 and y != -1:
         pag.click(x, y)
     else:
