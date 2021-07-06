@@ -22,10 +22,10 @@ Computer Science:
     time_weekday: "09:30"
     # time_friday: None
 
-Physics Revision Class:
-    code: "6628203182"
-    password: "6628203182"
-    time_weekday: "10:00"
+# Physics Revision Class:
+#     code: "6628203182"
+#     password: "6628203182"
+#     time_weekday: "10:00"
 
 Maths:
     code: "6628203182"
