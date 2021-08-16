@@ -55,13 +55,14 @@ def main():
                 f"\nUsing {cls[0]} class information \n  Code: {code_to_use} \n  Pass: {password_to_use}")
 
             # sending the program into execution phase
-            launcherMain(code_to_use, password_to_use)
+            status = launcherMain(code_to_use, password_to_use)
 
             # logging classes entered
             currClassInfo = {
                 "time": currTime,
                 "className": cls[0],
-                "date": datetime.today().strftime('%Y-%m-%d')
+                "date": datetime.today().strftime('%Y-%m-%d'),
+                "status": status["message"],
             }
             with open("log.json", "r+") as f:
                 output = []
@@ -74,7 +75,7 @@ def main():
                 json.dump(output, f)
 
 
-schedule.every(5).seconds.do(main)
+schedule.every(30).seconds.do(main)
 
 while True:
     schedule.run_pending()

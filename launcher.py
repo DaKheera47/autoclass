@@ -36,7 +36,7 @@ def clear():
             f"{cls} => {list(CLASS_INFO[cls].values())[1]} => {list(CLASS_INFO[cls].values())[2]}")
 
 
-def findImage(imageUrl, message, timeout, confidence=0.8):
+def findImage(imageUrl, message, timeout=10 * 60, confidence=0.8):
     i = 1
     while True:
         if i <= timeout:
@@ -75,38 +75,40 @@ def main(code, password):
 
     # locate join button on zoom
     x, y = findImage(
-        "joinBtn.png", "Searching for Join Button", timeout=60 * 10, confidence=globalConfidence)
+        "joinBtn.png", "Searching for Join Button", confidence=globalConfidence)
     if x != -1 and y != -1:
         pag.click(x, y)
     else:
-        return
+        return {"error": True, "message": "TIMEOUT: joinBtn.png"}
 
     # enter code into meeting id field
     x, y = findImage(
-        "joinMeeting.png", "Searching for meeting ID input field", timeout=60 * 10, confidence=globalConfidence)
+        "joinMeeting.png", "Searching for meeting ID input field", confidence=globalConfidence)
     if x != -1 and y != -1:
         enterTextInput(x, y + 60, code, "Code entered!")
     else:
-        return
+        return {"error": True, "message": "TIMEOUT: joinMeeting.png"}
 
     # enter password into password field
     x, y = findImage(
-        "enterMeetingPw.png", "Searching for password field", timeout=60 * 10, confidence=globalConfidence)
+        "enterMeetingPw.png", "Searching for password field", confidence=globalConfidence)
     if x != -1 and y != -1:
         enterTextInput(x, y + 60, password, "Password entered!")
     else:
-        return
+        return {"error": True, "message": "TIMEOUT: enterMeetingPw.png"}
 
     # locate join with computer audio button on zoom
     x, y = findImage("joinWithComputerAudioBtn.png",
-                     "Have not been accepted into class", timeout=60 * 10, confidence=globalConfidence)
+                     "Have not been accepted into class", confidence=globalConfidence)
     if x != -1 and y != -1:
         pag.click(x, y)
     else:
-        return
+        return {"error": True, "message": "TIMEOUT: joinWithComputerAudioBtn.png"}
 
     # force full screen zoom
     pag.hotkey("winleft", "up")
+
+    return {"error": False, "message": "Success"}
 
 
 # if this file is ran directly
