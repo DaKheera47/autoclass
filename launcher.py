@@ -76,10 +76,9 @@ def main(code, password):
     # locate join button on zoom
     x, y = findImage(
         "joinBtn.png", "Searching for Join Button", confidence=globalConfidence)
-    if x != -1 and y != -1:
-        pag.click(x, y)
-    else:
+    if x == -1 and y == -1:
         return {"error": True, "message": "TIMEOUT: joinBtn.png"}
+    pag.click(x, y)
 
     # enter code into meeting id field
     x, y = findImage(

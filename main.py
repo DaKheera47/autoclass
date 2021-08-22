@@ -10,6 +10,17 @@ import cursor
 import json
 cursor.hide()
 
+# TODO: make central object with all messages so rest of the code is cleaner
+# TODO: add support for using flag when launching to have confirmation or not
+# TODO: optimise logging by having className parent, and history for dates below
+# eg: {
+#     "Computer Science": {
+#         "date": "2021-08-16",
+#         "time": "08:00",
+#         "status": "Success"
+#     }
+# }
+
 # importing external files
 with open("config.yaml", 'r') as stream:
     try:
@@ -38,13 +49,8 @@ def main():
 
     cprint(f"Time: {currTime}", "cyan", attrs=["bold"], end="\r")
 
-    # getting standard wait time based on selection
-    STANDARD_WAIT = SETUP[SETUP["chosen_speed"]]["duration"]
-    pag.PAUSE = round(0.2 * STANDARD_WAIT, 3)
-
     for cls in CLASS_INFO.items():
         if currTime == cls[1]["time_weekday"]:
-        # if "Chemistry" == cls[0]:
             # Uncomment to add confirmation
             # isConfirmed = pag.confirm(
             #     text=f'Join {cls[0]} class?', title=f'Confirm joining of {cls[0]} class', buttons=['OK', 'Cancel'])
@@ -75,7 +81,7 @@ def main():
                 json.dump(output, f)
 
 
-schedule.every(30).seconds.do(main)
+schedule.every(15).seconds.do(main)
 
 while True:
     schedule.run_pending()
