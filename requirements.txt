@@ -26,3 +26,5 @@ termcolor == 1.1.0
 # D:\Drive Sync\auto\scheduled-class-launcher\launcher.py: 6
 # D:\Drive Sync\auto\scheduled-class-launcher\main.py: 8
 opencv-python == 4.5.1.48
+
+Pillow == 8.3.1
