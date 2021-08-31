@@ -1,0 +1,26 @@
+# how to add another class: follow this format
+
+# Title To Display While Selecting:
+#     zoom meeting code: 111-111-1111
+#     zoom meeting password: 1111111111
+
+# add any further classes below. follow above syntax. they appear in the order here
+Physics:
+    code: "6628203182"
+    password: "6628203182"
+    time_weekday: "08:00"
+
+Chemistry:
+    code: "4772336391"
+    password: "4772336391"
+    time_weekday: "08:50"
+
+Computer Science:
+    code: "4772336391"
+    password: "4772336391"
+    time_weekday: "11:20"
+
+Maths:
+    code: "6628203182"
+    password: "6628203182"
+    time_weekday: "12:10"

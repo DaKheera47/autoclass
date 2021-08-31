@@ -10,25 +10,14 @@ import cursor
 import json
 cursor.hide()
 
-# TODO: make central object with all messages so rest of the code is cleaner
-# TODO: add support for using flag when launching to have confirmation or not
-# TODO: optimise logging by having className parent, and history for dates below
-# eg: {
-#     "Computer Science": {
-#         "date": "2021-08-16",
-#         "time": "08:00",
-#         "status": "Success"
-#     }
-# }
-
 # importing external files
-with open("config.yaml", 'r') as stream:
+with open("./config/config.yaml", 'r') as stream:
     try:
         SETUP = yaml.safe_load(stream)
     except yaml.YAMLError as exc:
         print(exc)
 
-with open("classes.yaml", 'r') as stream:
+with open("./config/classes.yaml", 'r') as stream:
     try:
         CLASS_INFO = yaml.safe_load(stream)
     except yaml.YAMLError as exc:
@@ -70,7 +59,7 @@ def main():
                 "date": datetime.today().strftime('%Y-%m-%d'),
                 "status": status["message"],
             }
-            with open("log.json", "r+") as f:
+            with open("./out/log.json", "r+") as f:
                 output = []
                 fileData = json.loads(f.read())
                 for entry in fileData:
@@ -81,7 +70,7 @@ def main():
                 json.dump(output, f)
 
 
-schedule.every(15).seconds.do(main)
+schedule.every(30).seconds.do(main)
 
 while True:
     schedule.run_pending()

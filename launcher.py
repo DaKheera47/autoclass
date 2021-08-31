@@ -13,7 +13,7 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
     # to show preview of all classes to join
-    with open("classes.yaml", 'r') as stream:
+    with open("./config/classes.yaml", 'r') as stream:
         try:
             CLASS_INFO = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
@@ -32,20 +32,19 @@ def clear():
     cprint(f"CLASS LIST", "grey", attrs=["bold"])
 
     for cls in list(CLASS_INFO.keys()):
-        print(
-            f"{cls} => {list(CLASS_INFO[cls].values())[1]} => {list(CLASS_INFO[cls].values())[2]}")
+        print(f"{cls} => {list(CLASS_INFO[cls].values())[1]} => {list(CLASS_INFO[cls].values())[2]}")
 
 
-def findImage(imageUrl, message, timeout=10 * 60, confidence=0.8):
+def findImage(imageUrl, message, timeout=10 * 60, confidence=0.98):
     i = 1
     while True:
         if i <= timeout:
             try:
                 x, y = pag.locateCenterOnScreen(
-                    imageUrl, confidence=confidence)
+                    f"./static/{imageUrl}", confidence=confidence)
             except TypeError:
-                time.sleep(1)
                 print(f"{message} (Time Elapsed: {i}s)", end="\r")
+                time.sleep(1)
                 i += 1
                 continue
             break
@@ -65,7 +64,6 @@ def enterTextInput(x, y, text, message):
 
 def main(code, password):
     pag.PAUSE = 0.6
-    globalConfidence = 0.8
     # start button
     pag.press("winleft")
 
@@ -74,35 +72,33 @@ def main(code, password):
     pag.press("enter")
 
     # locate join button on zoom
-    x, y = findImage(
-        "joinBtn.png", "Searching for Join Button", confidence=globalConfidence)
-    if x == -1 and y == -1:
-        return {"error": True, "message": "TIMEOUT: joinBtn.png"}
-    pag.click(x, y)
-
-    # enter code into meeting id field
-    x, y = findImage(
-        "joinMeeting.png", "Searching for meeting ID input field", confidence=globalConfidence)
-    if x != -1 and y != -1:
-        enterTextInput(x, y + 60, code, "Code entered!")
-    else:
-        return {"error": True, "message": "TIMEOUT: joinMeeting.png"}
-
-    # enter password into password field
-    x, y = findImage(
-        "enterMeetingPw.png", "Searching for password field", confidence=globalConfidence)
-    if x != -1 and y != -1:
-        enterTextInput(x, y + 60, password, "Password entered!")
-    else:
-        return {"error": True, "message": "TIMEOUT: enterMeetingPw.png"}
-
-    # locate join with computer audio button on zoom
-    x, y = findImage("joinWithComputerAudioBtn.png",
-                     "Have not been accepted into class", confidence=globalConfidence)
+    x, y = findImage("joinBtn.png", "Searching for Join Button")
     if x != -1 and y != -1:
         pag.click(x, y)
     else:
-        return {"error": True, "message": "TIMEOUT: joinWithComputerAudioBtn.png"}
+        return {"error": True, "message": "ERR - joinBtn.png"}
+
+    # enter code into meeting id field
+    x, y = findImage("joinMeeting.png", "Searching for meeting ID input field")
+    if x != -1 and y != -1:
+        enterTextInput(x, y + 60, code, "Code entered!")
+    else:
+        return {"error": True, "message": "ERR - joinMeeting.png"}
+
+    # enter password into password field
+    x, y = findImage("enterMeetingPw.png", "Searching for password field")
+    if x != -1 and y != -1:
+        enterTextInput(x, y + 60, password, "Password entered!")
+    else:
+        return {"error": True, "message": "ERR - enterMeetingPw.png"}
+
+    # locate join with computer audio button on zoom
+    x, y = findImage("joinWithComputerAudioBtn.png",
+                     "Have not been accepted into class")
+    if x != -1 and y != -1:
+        pag.click(x, y)
+    else:
+        return {"error": True, "message": "ERR - joinWithComputerAudioBtn.png"}
 
     # force full screen zoom
     pag.hotkey("winleft", "up")
@@ -112,7 +108,7 @@ def main(code, password):
 
 # if this file is ran directly
 if __name__ == '__main__':
-    with open("classes.yaml", 'r') as stream:
+    with open("./config/classes.yaml", 'r') as stream:
         try:
             CLASS_INFO = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
