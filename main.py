@@ -39,8 +39,6 @@ def main():
 
     currTime = datetime.now().strftime("%H:%M")
 
-    cprint(f"Time: {currTime}", "cyan", attrs=["bold"], end="\r")
-
     for cls in CLASS_INFO.items():
         if currTime == cls[1]["time_weekday"]:
             # Uncomment to add confirmation

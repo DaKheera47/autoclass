@@ -6,34 +6,14 @@ import sys
 from termcolor import cprint
 import json
 import cursor
+from genTable import genTable
 cursor.hide()
-
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
+
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
-
-    # to show preview of all classes to join
-    with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
-        try:
-            CLASS_INFO = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    cprint("""
-    ______  _____   _____  _______             _______ _     _ __   _ _______ _     _ _______  ______    
-     ____/ |     | |     | |  |  |      |      |_____| |     | | \  | |       |_____| |______ |_____/    
-    /_____ |_____| |_____| |  |  |      |_____ |     | |_____| |  \_| |_____  |     | |______ |    \_    
-                                                                                                         
-    ______  __   __      ______  _______ _     _ _     _ _______ _______  ______ _______                 
-    |_____]   \_/        |     \ |_____| |____/  |_____| |______ |______ |_____/ |_____|                 
-    |_____]    |         |_____/ |     | |    \_ |     | |______ |______ |    \_ |     |                 
-                                                                                                         
-""", "green")
-    cprint(f"CLASS LIST", "grey", attrs=["bold"])
-
-    for cls in list(CLASS_INFO.keys()):
-        print(f"{cls} => {list(CLASS_INFO[cls].values())[1]} => {list(CLASS_INFO[cls].values())[2]}")
+    genTable()
 
 
 def findImage(imageUrl, message, timeout=10 * 60, confidence=0.98):

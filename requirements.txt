@@ -4,17 +4,27 @@
 # D:\Drive Sync\auto\scheduled-class-launcher\main.py: 1
 PyAutoGUI == 0.9.52
 
+# D:\Drive Sync\auto\scheduled-class-launcher\genTable.py: 2
 # D:\Drive Sync\auto\scheduled-class-launcher\launcher.py: 4
 # D:\Drive Sync\auto\scheduled-class-launcher\main.py: 3
+# D:\Drive Sync\auto\scheduled-class-launcher\test.py: 2
 PyYAML == 5.4.1
 
+# D:\Drive Sync\auto\scheduled-class-launcher\genTable.py: 2
 # D:\Drive Sync\auto\scheduled-class-launcher\launcher.py: 4
 # D:\Drive Sync\auto\scheduled-class-launcher\main.py: 3
+# D:\Drive Sync\auto\scheduled-class-launcher\test.py: 2
 cronyo == 0.4.5
 
+# D:\Drive Sync\auto\scheduled-class-launcher\genTable.py: 15
 # D:\Drive Sync\auto\scheduled-class-launcher\launcher.py: 8
 # D:\Drive Sync\auto\scheduled-class-launcher\main.py: 9
+# D:\Drive Sync\auto\scheduled-class-launcher\test.py: 14
 cursor == 1.3.4
+
+# D:\Drive Sync\auto\scheduled-class-launcher\genTable.py: 1,3,4,6,7,8,9,10,11,12
+# D:\Drive Sync\auto\scheduled-class-launcher\test.py: 1,3,4,6,7,8,9,10,11
+rich == 10.9.0
 
 # D:\Drive Sync\auto\scheduled-class-launcher\main.py: 6
 schedule == 0.6.0
@@ -23,8 +33,6 @@ schedule == 0.6.0
 # D:\Drive Sync\auto\scheduled-class-launcher\main.py: 8
 termcolor == 1.1.0
 
-# D:\Drive Sync\auto\scheduled-class-launcher\launcher.py: 6
-# D:\Drive Sync\auto\scheduled-class-launcher\main.py: 8
 opencv-python == 4.5.1.48
 
 Pillow == 8.3.1
