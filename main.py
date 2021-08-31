@@ -8,16 +8,19 @@ from datetime import datetime
 from termcolor import cprint
 import cursor
 import json
+import os
 cursor.hide()
 
+CUR_PATH = os.path.dirname(os.path.realpath(__file__))
+
 # importing external files
-with open("./config/config.yaml", 'r') as stream:
+with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
     try:
         SETUP = yaml.safe_load(stream)
     except yaml.YAMLError as exc:
         print(exc)
 
-with open("./config/classes.yaml", 'r') as stream:
+with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
     try:
         CLASS_INFO = yaml.safe_load(stream)
     except yaml.YAMLError as exc:
@@ -59,7 +62,7 @@ def main():
                 "date": datetime.today().strftime('%Y-%m-%d'),
                 "status": status["message"],
             }
-            with open("./out/log.json", "r+") as f:
+            with open(f"{CUR_PATH}/out/log.json", "r+") as f:
                 output = []
                 fileData = json.loads(f.read())
                 for entry in fileData:

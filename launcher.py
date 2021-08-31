@@ -8,12 +8,13 @@ import json
 import cursor
 cursor.hide()
 
+CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
     # to show preview of all classes to join
-    with open("./config/classes.yaml", 'r') as stream:
+    with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
         try:
             CLASS_INFO = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
@@ -41,7 +42,7 @@ def findImage(imageUrl, message, timeout=10 * 60, confidence=0.98):
         if i <= timeout:
             try:
                 x, y = pag.locateCenterOnScreen(
-                    f"./static/{imageUrl}", confidence=confidence)
+                    f"{CUR_PATH}/static/{imageUrl}", confidence=confidence)
             except TypeError:
                 print(f"{message} (Time Elapsed: {i}s)", end="\r")
                 time.sleep(1)
@@ -108,7 +109,7 @@ def main(code, password):
 
 # if this file is ran directly
 if __name__ == '__main__':
-    with open("./config/classes.yaml", 'r') as stream:
+    with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
         try:
             CLASS_INFO = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
