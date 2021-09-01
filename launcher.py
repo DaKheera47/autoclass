@@ -3,7 +3,6 @@ import time
 import os
 import yaml
 import sys
-from termcolor import cprint
 import json
 import cursor
 from genTable import genTable

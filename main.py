@@ -5,7 +5,6 @@ from launcher import main as launcherMain
 from launcher import clear
 import schedule
 from datetime import datetime
-from termcolor import cprint
 import cursor
 import json
 import os
