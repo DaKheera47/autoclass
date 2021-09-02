@@ -19,8 +19,6 @@ def findImage(imageUrl: str, message: str, confidence: int = 0.98):
     except TypeError:
         return (-1, -1)
 
-    # clear()
-
 
 def enterTextInput(x: int, y: int, text: str, message: str):
     pag.click(x=x, y=y)

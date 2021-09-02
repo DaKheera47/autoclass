@@ -10,6 +10,25 @@ from helpers import findImage, enterTextInput, findAndClick, findAndInputText
 cursor.hide()
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 
+MSGS = {
+    "join": {
+        "searching": "Searching Join Button",
+        "error": "Couldn't find Join Button",
+    },
+    "enterCode": {
+        "searching": "Searching Join Meeting Text Input",
+        "error": "Couldn't find Join Meeting Text Input",
+    },
+    "enterPW": {
+        "searching": "Searching for Password Text Input",
+        "error": "Couldn't find Password Text Input",
+    },
+    "compAudio": {
+        "searching": "Have Not Been Accepted Into Class",
+        "error": "Couldn't Find Join With Computer Audio Button or The Host Didn't Allow Entry",
+    },
+}
+
 
 def main(code, password):
     pag.PAUSE = 0.6
@@ -21,29 +40,29 @@ def main(code, password):
     pag.press("enter")
 
     joinBtn = findAndClick(["joinUnsigned.PNG", "joinBtn.png"],
-                           "Searching Join Button",
-                           "Couldn't find Join Button")
+                           MSGS["join"]["searching"],
+                           MSGS["join"]["error"])
     if joinBtn["error"]:
         return joinBtn
 
     # enter code into meeting id field
     joinMeeting = findAndInputText(["joinMeeting.PNG"],
-                                   "Searching Join Meeting Text Input",
-                                   "Couldn't find Join Meeting Text Input", code)
+                                   MSGS["enterCode"]["searching"],
+                                   MSGS["enterCode"]["error"], code)
     if joinMeeting["error"]:
         return joinMeeting
 
     # enter password into password field
     joinPassword = findAndInputText(["enterMeetingPw.png"],
-                                    "Searching for Password Text Input",
-                                    "Couldn't find Join Meeting Text Input", password)
+                                    MSGS["enterPW"]["searching"],
+                                    MSGS["enterPW"]["error"], password)
     if joinPassword["error"]:
         return joinPassword
 
     # join with computer audio
     joinWithCompAudioBtn = findAndClick(["joinWithComputerAudioBtn.PNG"],
-                                        "Have Not Been Accepted Into Class",
-                                        "Couldn't Find Join With Computer Audio Button")
+                                        MSGS["compAudio"]["searching"],
+                                        MSGS["compAudio"]["error"])
     if joinWithCompAudioBtn["error"]:
         return joinWithCompAudioBtn
 
