@@ -2,6 +2,8 @@ from genTable import genTable
 import os
 import time
 import pyautogui as pag
+import json
+import yaml
 
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -27,7 +29,7 @@ def enterTextInput(x: int, y: int, text: str, message: str):
     pag.press("enter")
 
 
-def findAndClick(imageUrls: list, searchingText: str, errorMessage: str, timeout: int = 60 * 10):
+def findAndClick(imageUrls: list, searchingText: str, errorMessage: str, timeout: int = 60):
     output = {}
     i = 1
 
@@ -63,3 +65,39 @@ def findAndInputText(imageUrls: list, searchingText: str, errorMessage: str, tex
             i += 1
         else:
             return {"error": True, "message": f"Timed Out: {errorMessage}"}
+
+
+def logging(time: str, className: str, date: str, status: str):
+    # logging classes entered
+    currClassInfo = {
+        "time": time,
+        "className": className,
+        "date": date,
+        "status": status,
+    }
+    with open(f"{CUR_PATH}/out/log.json", "r+") as f:
+        output = []
+        fileData = json.loads(f.read())
+        for entry in fileData:
+            output.append(entry)
+        output.append(currClassInfo)
+
+        f.seek(0)
+        json.dump(output, f)
+
+
+def getYamlFiles():
+    # importing external files
+    with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
+        try:
+            SETUP = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
+        try:
+            CLASS_INFO = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    return SETUP, CLASS_INFO

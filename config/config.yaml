@@ -1,0 +1,4 @@
+delayBetweenActions: 0.6
+# use `False` or `True`
+# require confirmation before joining class
+requireConfirmation: True

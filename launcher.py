@@ -5,10 +5,11 @@ import yaml
 import sys
 import json
 import cursor
-from helpers import findImage, enterTextInput, findAndClick, findAndInputText
+from helpers import findImage, enterTextInput, findAndClick, findAndInputText, getYamlFiles
 
 cursor.hide()
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
+SETUP, CLASS_INFO = getYamlFiles()
 
 MSGS = {
     "join": {
@@ -31,7 +32,7 @@ MSGS = {
 
 
 def main(code, password):
-    pag.PAUSE = 0.6
+    pag.PAUSE = SETUP["delayBetweenActions"]
     # start button
     pag.press("winleft")
 

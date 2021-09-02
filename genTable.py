@@ -20,6 +20,19 @@ def genTable():
     CUR_PATH = os.path.dirname(os.path.realpath(__file__))
     CURR_TIME = datetime.now().strftime("%H:%M")
 
+    # importing external files
+    with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
+        try:
+            SETUP = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
+        try:
+            CLASS_INFO = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
     with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
         try:
             CLASS_INFO = yaml.safe_load(stream)
@@ -45,6 +58,31 @@ def genTable():
                 time = Text.assemble((f"{time}", "green"))
 
             table.add_row(cls, code, time)
+        return table
+
+    def genConfig():
+        if SETUP["requireConfirmation"]:
+            confirmation = Text.assemble(("Enabled", "black on green"))
+        else:
+            confirmation = Text.assemble(("Disabled", "black on red"))
+
+        table = Table()
+
+        table.add_column("Description", justify="left",
+                         style="cyan", no_wrap=True)
+        table.add_column("Setting", justify="left")
+
+        # for cls in list(SETUP.keys()):
+        # if time has passed
+        if SETUP["requireConfirmation"]:
+            confirmation = Text.assemble(("Enabled", "black on green"))
+        else:
+            confirmation = Text.assemble(("Disabled", "black on red"))
+
+        table.add_row(
+            "Require confirmation before entering class", confirmation)
+        table.add_row(
+            "Delay between actions", str(SETUP["delayBetweenActions"]))
 
         return table
 
@@ -58,12 +96,6 @@ def genTable():
 -   Extract the files to any folder (always keep them in the same folder structure)
 -   See available features in the `build` folder 
 -   You may create a shortcut of any of these files
-    """
-    featuresMarkdown = """
-# Features
--   Open Zoom classes fully automatically based on time
--   Enter class details like the meeting code, the password and the time
--   Any number of classes can be present in the file and they will be opened at their respective time
     """
 
     # creating UI layout
@@ -96,8 +128,17 @@ def genTable():
     layout["middle"]["left"].update(
         Markdown(instructionsMarkdown)
     )
+    if SETUP["requireConfirmation"]:
+        confirmation = Text.assemble(("Enabled", "black on green"))
+    else:
+        confirmation = Text.assemble(("Disabled", "black on red"))
+
     layout["middle"]["right"].update(
-        Markdown(featuresMarkdown)
+        Padding(
+            Group(
+                Markdown("# Current Configuration"),
+                genConfig()
+            ), (0, 0, 0, 1))
     )
     layout["bottom"]["left"].update(
         Align(bottomLeftComponents, align="left", vertical="bottom")
