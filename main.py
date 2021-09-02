@@ -2,7 +2,7 @@ import pyautogui as pag
 import time
 import yaml
 from launcher import main as launcherMain
-from launcher import clear
+from helpers import clear
 import schedule
 from datetime import datetime
 import cursor
