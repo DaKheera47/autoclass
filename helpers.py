@@ -13,7 +13,7 @@ def clear():
     genTable()
 
 
-def findImage(imageUrl: str, message: str, confidence: int = 0.98):
+def findImage(imageUrl: str, message: str, confidence: int = 0.90):
     try:
         x, y = pag.locateCenterOnScreen(
             f"{CUR_PATH}/static/{imageUrl}", confidence=confidence)
@@ -29,7 +29,7 @@ def enterTextInput(x: int, y: int, text: str, message: str):
     pag.press("enter")
 
 
-def findImageTimeout(imageUrl: str, message: str, timeout: int = 10 * 60, confidence: int = 0.98):
+def findImageTimeout(imageUrl: str, message: str, timeout: int = 10 * 60, confidence: int = 0.90):
     i = 1
     while True:
         if i <= timeout:

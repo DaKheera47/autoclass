@@ -9,18 +9,22 @@ Chemistry:
     code: "4772336391"
     password: "4772336391"
     time_weekday: "08:50"
+    time_friday: "09:50"
 
 Physics:
     code: "6628203182"
     password: "6628203182"
     time_weekday: "10:30"
+    time_friday: "11:30"
 
 Computer Science:
     code: "4772336391"
     password: "4772336391"
     time_weekday: "11:20"
+    time_friday: "12:20"
 
 Maths:
     code: "6628203182"
     password: "6628203182"
     time_weekday: "12:10"
+    time_friday: "13:10"

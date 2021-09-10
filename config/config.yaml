@@ -6,7 +6,7 @@ requireConfirmation: True
 
 # use `False` or `True`
 # record classes
-recordClasses: True
+recordClasses: False
 
 # in minutes
 # maximum 59 minutes

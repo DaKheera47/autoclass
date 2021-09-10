@@ -13,36 +13,27 @@ def checkForClassTime():
     SETUP, CLASS_INFO = getYamlFiles()
     clear()
     currTime = datetime.now().strftime("%H:%M")
+    currDay = datetime.now().strftime("%A")
 
     for cls in CLASS_INFO.items():
-        if currTime == cls[1]["time_weekday"]:
-            # getting class code
-            code_to_use = str(CLASS_INFO[cls[0]]["code"])
-            password_to_use = str(CLASS_INFO[cls[0]]["password"])
+        # getting class code
+        code_to_use = str(CLASS_INFO[cls[0]]["code"])
+        password_to_use = str(CLASS_INFO[cls[0]]["password"])
+        isConfirmed = "OK"
 
-            print(
-                f"\nUsing {cls[0]} class information \n  Code: {code_to_use} \n  Pass: {password_to_use}")
-
+        if (currTime == cls[1]["time_friday"] and currDay == "Friday") or (currTime == cls[1]["time_weekday"] and currDay != "Friday"):
             # if confirmation is required
             if SETUP["requireConfirmation"]:
                 isConfirmed = pag.confirm(
-                    text=f'Join {cls[0]} class?', title=f'Confirm joining of {cls[0]} class', buttons=['OK', 'Cancel'])
+                    text=f'Do you want to join {cls[0]} class?',
+                    title=f'Confirm joining of {cls[0]} class',
+                    buttons=['OK', 'Cancel']
+                )
 
-                if isConfirmed == "OK":
-                    status = launcherMain(code_to_use, password_to_use)
-
-                    logging(currTime, cls[0], datetime.today().strftime(
-                        '%Y-%m-%d'), status["message"])
-
-                    checkForClassTime()
-
-            # if confirmation not needed
-            else:
+            if isConfirmed == "OK":
                 status = launcherMain(code_to_use, password_to_use)
-
                 logging(currTime, cls[0], datetime.today().strftime(
                     '%Y-%m-%d'), status["message"])
-
                 checkForClassTime()
 
 
