@@ -5,15 +5,15 @@
 #     zoom meeting password: 1111111111
 
 # add any further classes below. follow above syntax. they appear in the order here
-Physics:
-    code: "6628203182"
-    password: "6628203182"
-    time_weekday: "08:00"
-
 Chemistry:
     code: "4772336391"
     password: "4772336391"
     time_weekday: "08:50"
+
+Physics:
+    code: "6628203182"
+    password: "6628203182"
+    time_weekday: "10:30"
 
 Computer Science:
     code: "4772336391"

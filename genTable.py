@@ -33,12 +33,6 @@ def genTable():
         except yaml.YAMLError as exc:
             print(exc)
 
-    with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
-        try:
-            CLASS_INFO = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
     def genClassList():
         table = Table(title="Class List", caption=Text.assemble(
             (f"{CURR_TIME}", "bold green")))
@@ -72,17 +66,21 @@ def genTable():
                          style="cyan", no_wrap=True)
         table.add_column("Setting", justify="left")
 
-        # for cls in list(SETUP.keys()):
-        # if time has passed
         if SETUP["requireConfirmation"]:
             confirmation = Text.assemble(("Enabled", "black on green"))
         else:
             confirmation = Text.assemble(("Disabled", "black on red"))
+        if SETUP["recordClasses"]:
+            record = Text.assemble(("Enabled", "black on green"))
+        else:
+            record = Text.assemble(("Disabled", "black on red"))
 
         table.add_row(
-            "Require confirmation before entering class", confirmation)
-        table.add_row(
             "Delay between actions", str(SETUP["delayBetweenActions"]))
+        table.add_row(
+            "Require confirmation before joining a class", confirmation)
+        table.add_row(
+            "Record classes with OBS Studio", record)
 
         return table
 

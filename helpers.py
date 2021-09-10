@@ -29,7 +29,25 @@ def enterTextInput(x: int, y: int, text: str, message: str):
     pag.press("enter")
 
 
-def findAndClick(imageUrls: list, searchingText: str, errorMessage: str, timeout: int = 60):
+def findImageTimeout(imageUrl: str, message: str, timeout: int = 10 * 60, confidence: int = 0.98):
+    i = 1
+    while True:
+        if i <= timeout:
+            try:
+                x, y = pag.locateCenterOnScreen(
+                    f"{CUR_PATH}/static/{imageUrl}", confidence=confidence)
+            except TypeError:
+                time.sleep(1)
+                i += 1
+                continue
+            break
+        else:
+            return (-1, -1)
+
+    return (x, y)
+
+
+def findAndClick(imageUrls: list, searchingText: str, errorMessage: str, timeout: int = 60 * 10):
     output = {}
     i = 1
 

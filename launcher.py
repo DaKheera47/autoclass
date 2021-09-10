@@ -5,7 +5,7 @@ import yaml
 import sys
 import json
 import cursor
-from helpers import findImage, enterTextInput, findAndClick, findAndInputText, getYamlFiles
+from helpers import findImageTimeout, enterTextInput, findAndClick, findAndInputText, getYamlFiles
 
 cursor.hide()
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -31,8 +31,40 @@ MSGS = {
 }
 
 
+def configureOBS(SETUP):
+    # start button
+    pag.press("winleft")
+
+    # launch zoom
+    pag.write("OBS")
+    pag.press("enter")
+
+    time.sleep(5)
+
+    # tools
+    pag.hotkey("alt", "t")
+
+    # output timer
+    x, y = findImageTimeout("outputTimer.png", "Searching for output timer")
+    if x != -1 and y != -1:
+        pag.click(x, y)
+    else:
+        print("WTF")
+
+    # tools
+    pag.press("tab", presses=6)
+    pag.write(str(SETUP["timeToRecordClass"]))
+    # going to start button
+    pag.press("tab", presses=2)
+    pag.press("enter")
+
+
 def main(code, password):
     pag.PAUSE = SETUP["delayBetweenActions"]
+
+    if SETUP["recordClasses"]:
+        configureOBS(SETUP)
+
     # start button
     pag.press("winleft")
 
