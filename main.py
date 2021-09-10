@@ -2,6 +2,7 @@ import pyautogui as pag
 import time
 from launcher import main as launcherMain
 from helpers import clear, logging, getYamlFiles
+from genTable import genTable
 import schedule
 from datetime import datetime
 import cursor
@@ -31,6 +32,7 @@ def startLaunching(className, code_to_use, password_to_use, currTime):
 def checkForClassTime():
     SETUP, CLASS_INFO = getYamlFiles()
     clear()
+    genTable()
     currTime = datetime.now().strftime("%H:%M")
     currDayNum = datetime.today().weekday()
 

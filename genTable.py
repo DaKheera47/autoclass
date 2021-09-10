@@ -11,6 +11,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.padding import Padding
 from datetime import datetime
+from helpers import getYamlFiles
 import os
 import cursor
 cursor.hide()
@@ -23,18 +24,7 @@ def genTable():
     CURR_DAY = datetime.now().strftime("%A")
     CURR_DAY_NUM = datetime.today().weekday()
 
-    # importing external files
-    with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
-        try:
-            SETUP = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
-        try:
-            CLASS_INFO = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
+    SETUP, CLASS_INFO = getYamlFiles()
 
     def genClassList():
         table = Table(title="Class List", caption=Text.assemble(

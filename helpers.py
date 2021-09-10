@@ -1,16 +1,16 @@
-from genTable import genTable
 import os
 import time
 import pyautogui as pag
 import json
 import yaml
+from datetime import datetime
+from collections import OrderedDict
 
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
-    genTable()
 
 
 def findImage(imageUrl: str, message: str, confidence: int = 0.90):
@@ -105,6 +105,7 @@ def logging(time: str, className: str, date: str, status: str):
 
 
 def getYamlFiles():
+    CURR_DAY_NUM = datetime.today().weekday()
     # importing external files
     with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
         try:
@@ -117,5 +118,16 @@ def getYamlFiles():
             CLASS_INFO = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
+
+    # sorting classes
+    # https://stackoverflow.com/questions/42398375/sorting-a-dictionary-of-dictionaries-python
+    if CURR_DAY_NUM == 4:
+        # friday timings
+        CLASS_INFO = OrderedDict(
+            sorted(CLASS_INFO.items(), key=lambda x: x[1]["time_friday"]))
+    else:
+        # any other day
+        CLASS_INFO = OrderedDict(
+            sorted(CLASS_INFO.items(), key=lambda x: x[1]["time_weekday"]))
 
     return SETUP, CLASS_INFO
