@@ -9,32 +9,45 @@ import os
 cursor.hide()
 
 
+def startLaunching(className, code_to_use, password_to_use):
+    # if confirmation is required
+    SETUP, CLASS_INFO = getYamlFiles()
+    isConfirmed == "OK"
+    if SETUP["requireConfirmation"]:
+        isConfirmed = pag.confirm(
+            text=f'Do you want to join {className} class?',
+            title=f'Confirm joining of {className} class',
+            buttons=['OK', 'Cancel']
+        )
+
+    if isConfirmed == "OK":
+        status = launcherMain(code_to_use, password_to_use)
+        logging(currTime, cls[0], datetime.today().strftime(
+            '%Y-%m-%d'), status["message"])
+
+    checkForClassTime()
+
+
 def checkForClassTime():
     SETUP, CLASS_INFO = getYamlFiles()
     clear()
     currTime = datetime.now().strftime("%H:%M")
-    currDay = datetime.now().strftime("%A")
+    currDayNum = datetime.today().weekday()
 
     for cls in CLASS_INFO.items():
         # getting class code
         code_to_use = str(CLASS_INFO[cls[0]]["code"])
         password_to_use = str(CLASS_INFO[cls[0]]["password"])
-        isConfirmed = "OK"
 
-        if (currTime == cls[1]["time_friday"] and currDay == "Friday") or (currTime == cls[1]["time_weekday"] and currDay != "Friday"):
-            # if confirmation is required
-            if SETUP["requireConfirmation"]:
-                isConfirmed = pag.confirm(
-                    text=f'Do you want to join {cls[0]} class?',
-                    title=f'Confirm joining of {cls[0]} class',
-                    buttons=['OK', 'Cancel']
-                )
+        # checking if today is friday
+        if (currTime == cls[1]["time_friday"] and currDayNum == 4):
+            startLaunching(cls[0], code_to_use, password_to_use)
+            return
 
-            if isConfirmed == "OK":
-                status = launcherMain(code_to_use, password_to_use)
-                logging(currTime, cls[0], datetime.today().strftime(
-                    '%Y-%m-%d'), status["message"])
-                checkForClassTime()
+        # checking if today is between monday and thursday
+        if (currTime == cls[1]["time_weekday"] and currDayNum in range(0, 4)):
+            startLaunching(cls[0], code_to_use, password_to_use)
+            return
 
 
 checkForClassTime()
