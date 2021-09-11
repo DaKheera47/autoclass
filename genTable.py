@@ -19,6 +19,9 @@ cursor.hide()
 def genTable():
     CUR_PATH = os.path.dirname(os.path.realpath(__file__))
     CURR_TIME = datetime.now().strftime("%H:%M")
+    CURR_DATE = datetime.now().strftime("%d-%m-%Y")
+    CURR_DAY = datetime.now().strftime("%A")
+    CURR_DAY_NUM = datetime.today().weekday()
 
     # importing external files
     with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
@@ -35,7 +38,7 @@ def genTable():
 
     def genClassList():
         table = Table(title="Class List", caption=Text.assemble(
-            (f"{CURR_TIME}", "bold green")))
+            (f"{CURR_TIME} \n {CURR_DATE} - {CURR_DAY}", "bold green")))
 
         table.add_column("Title", justify="left", style="cyan", no_wrap=True)
         table.add_column("Code", justify="left", style="cyan")
@@ -43,15 +46,23 @@ def genTable():
 
         for cls in list(CLASS_INFO.keys()):
             code = list(CLASS_INFO[cls].values())[1]
-            time = list(CLASS_INFO[cls].values())[2]
 
-            # if time has passed
+            if CURR_DAY_NUM == 4:
+                # friday timings
+                time = list(CLASS_INFO[cls].values())[3]
+            else:
+                # any other day
+                time = list(CLASS_INFO[cls].values())[2]
+
             if CURR_TIME > time:
+                # if time has passed then yellow
                 time = Text.assemble((f"{time}", "yellow"))
             else:
+                # if time if yet to come then green
                 time = Text.assemble((f"{time}", "green"))
 
             table.add_row(cls, code, time)
+
         return table
 
     def genConfig():

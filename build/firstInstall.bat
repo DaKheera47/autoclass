@@ -7,12 +7,7 @@ cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) &&
 @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 
 @REM installing programs required
-choco install python -y
-choco install obs-studio -y
-choco install zoom -y
+choco install python obs-studio zoom -y
 
 @REM refreshing all environment variables to make sure python works
 refreshenv
-
-@REM installing python packages required
-pip install -r ../requirements.txt
