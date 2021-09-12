@@ -5,6 +5,7 @@ import json
 import yaml
 from datetime import datetime
 from collections import OrderedDict
+from rich.progress import Progress
 
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -13,7 +14,7 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def findImage(imageUrl: str, message: str, confidence: int = 0.90):
+def findImage(imageUrl: str, confidence: int = 0.90):
     try:
         x, y = pag.locateCenterOnScreen(
             f"{CUR_PATH}/static/{imageUrl}", confidence=confidence)
@@ -47,42 +48,65 @@ def findImageTimeout(imageUrl: str, message: str, timeout: int = 10 * 60, confid
     return (x, y)
 
 
-def findAndClick(imageUrls: list, searchingText: str, errorMessage: str, timeout: int = 60 * 10):
+def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int = 60 * 10):
     output = {}
-    i = 1
+    i = 0
 
-    while True:
-        if i <= timeout:
-            for imageUrl in imageUrls:
-                print(f"Searching for {imageUrl}")
-                x, y = findImage(imageUrl, searchingText)
-                if x != -1 and y != -1:
-                    pag.click(x, y)
-                    return {"error": False, "message": None}
-                    break
-            i += 1
-        else:
-            return {"error": True, "message": f"Timed Out: {errorMessage}"}
-            break
+    with Progress(transient=True) as progress:
+        task = progress.add_task(f"{message}...", start=False, total=timeout)
+
+        while not progress.finished:
+            if i <= timeout:
+                for imageUrl in imageUrls:
+                    t1 = time.time()
+                    x, y = findImage(imageUrl)
+                    # calculating time taken to find this image
+                    t2 = time.time() - t1
+                    if x != -1 and y != -1:
+                        pag.click(x, y)
+                        progress.stop()
+                        return {"error": False, "message": None}
+                        break
+                    else:
+                        # calculating amount to increase based on time taken by image to attempt to find
+                        amountToIncrease = (
+                            len(imageUrls) * t2 / len(imageUrls))
+                        i += amountToIncrease
+                        progress.update(task, advance=amountToIncrease)
+            else:
+                progress.stop()
+                return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
 
-def findAndInputText(imageUrls: list, searchingText: str, errorMessage: str, textToInput: str, timeout: int = 60 * 10):
+def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInput: str, timeout: int = 60 * 10):
     output = {}
-    i = 1
+    i = 0
 
-    while True:
-        if i <= timeout:
-            for imageUrl in imageUrls:
-                print(f"Searching for {imageUrl}")
-                x, y = findImage(imageUrl, searchingText)
-                if x != -1 and y != -1:
-                    pag.click(x, y + 60)
-                    pag.write(textToInput.replace(" ", ""))
-                    pag.press("enter")
-                    return {"error": False, "message": None}
-            i += 1
-        else:
-            return {"error": True, "message": f"Timed Out: {errorMessage}"}
+    with Progress(transient=True) as progress:
+        task = progress.add_task(f"{message}...", start=False, total=timeout)
+
+        while not progress.finished:
+            if i <= timeout:
+                for imageUrl in imageUrls:
+                    t1 = time.time()
+                    x, y = findImage(imageUrl)
+                    # calculating time taken to find this image
+                    t2 = time.time() - t1
+                    if x != -1 and y != -1:
+                        pag.click(x, y + 60)
+                        pag.write(textToInput.replace(" ", ""))
+                        pag.press("enter")
+                        progress.stop()
+                        return {"error": False, "message": None}
+                    else:
+                        # calculating amount to increase based on time taken by image to attempt to find
+                        amountToIncrease = (
+                            len(imageUrls) * t2 / len(imageUrls))
+                        i += amountToIncrease
+                        progress.update(task, advance=amountToIncrease)
+            else:
+                progress.stop()
+                return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
 
 def logging(time: str, className: str, date: str, status: str):
