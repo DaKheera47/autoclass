@@ -11,7 +11,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.padding import Padding
 from datetime import datetime
-from helpers import getYamlFiles
+from helpers import loadFiles
 import os
 import cursor
 cursor.hide()
@@ -24,7 +24,7 @@ def genTable():
     CURR_DAY = datetime.now().strftime("%A")
     CURR_DAY_NUM = datetime.today().weekday()
 
-    SETUP, CLASS_INFO = getYamlFiles()
+    SETUP, CLASS_INFO = loadFiles()
 
     def genClassList():
         table = Table(title="Class List", caption=Text.assemble(

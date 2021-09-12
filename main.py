@@ -1,7 +1,7 @@
 import pyautogui as pag
 import time
 from launcher import main as launcherMain
-from helpers import clear, logging, getYamlFiles
+from helpers import clear, logging, loadFiles
 from genTable import genTable
 import schedule
 from datetime import datetime
@@ -12,7 +12,7 @@ cursor.hide()
 
 def startLaunching(className, code_to_use, password_to_use, currTime):
     # if confirmation is required
-    SETUP, CLASS_INFO = getYamlFiles()
+    SETUP, CLASS_INFO = loadFiles()
     isConfirmed = "OK"
     if SETUP["requireConfirmation"]:
         isConfirmed = pag.confirm(
@@ -30,7 +30,7 @@ def startLaunching(className, code_to_use, password_to_use, currTime):
 
 
 def checkForClassTime():
-    SETUP, CLASS_INFO = getYamlFiles()
+    SETUP, CLASS_INFO = loadFiles()
     clear()
     genTable()
     currTime = datetime.now().strftime("%H:%M")

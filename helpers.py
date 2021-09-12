@@ -104,7 +104,7 @@ def logging(time: str, className: str, date: str, status: str):
         json.dump(output, f)
 
 
-def getYamlFiles():
+def loadFiles():
     CURR_DAY_NUM = datetime.today().weekday()
     # importing external files
     with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:

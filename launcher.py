@@ -5,11 +5,11 @@ import yaml
 import sys
 import json
 import cursor
-from helpers import findImageTimeout, enterTextInput, findAndClick, findAndInputText, getYamlFiles
+from helpers import findImageTimeout, enterTextInput, findAndClick, findAndInputText, loadFiles
 
 cursor.hide()
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
-SETUP, CLASS_INFO = getYamlFiles()
+SETUP, CLASS_INFO = loadFiles()
 
 MSGS = {
     "join": {
