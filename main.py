@@ -9,7 +9,7 @@ import os
 cursor.hide()
 
 
-def startLaunching(className, code_to_use, password_to_use):
+def startLaunching(className, code_to_use, password_to_use, currTime):
     # if confirmation is required
     SETUP, CLASS_INFO = getYamlFiles()
     isConfirmed == "OK"
@@ -22,7 +22,7 @@ def startLaunching(className, code_to_use, password_to_use):
 
     if isConfirmed == "OK":
         status = launcherMain(code_to_use, password_to_use)
-        logging(currTime, cls[0], datetime.today().strftime(
+        logging(currTime, className, datetime.today().strftime(
             '%Y-%m-%d'), status["message"])
 
     checkForClassTime()
@@ -39,14 +39,14 @@ def checkForClassTime():
         code_to_use = str(CLASS_INFO[cls[0]]["code"])
         password_to_use = str(CLASS_INFO[cls[0]]["password"])
 
-        # checking if today is friday
-        if (currTime == cls[1]["time_friday"] and currDayNum == 4):
-            startLaunching(cls[0], code_to_use, password_to_use)
-            return
-
         # checking if today is between monday and thursday
         if (currTime == cls[1]["time_weekday"] and currDayNum in range(0, 4)):
-            startLaunching(cls[0], code_to_use, password_to_use)
+            startLaunching(cls[0], code_to_use, password_to_use, currTime)
+            return
+
+        # checking if today is friday
+        if (currTime == cls[1]["time_friday"] and currDayNum == 4):
+            startLaunching(cls[0], code_to_use, password_to_use, currTime)
             return
 
 
