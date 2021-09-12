@@ -12,7 +12,7 @@ cursor.hide()
 def startLaunching(className, code_to_use, password_to_use, currTime):
     # if confirmation is required
     SETUP, CLASS_INFO = getYamlFiles()
-    isConfirmed == "OK"
+    isConfirmed = "OK"
     if SETUP["requireConfirmation"]:
         isConfirmed = pag.confirm(
             text=f'Do you want to join {className} class?',
