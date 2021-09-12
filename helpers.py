@@ -24,7 +24,7 @@ def findImage(imageUrl: str, message: str, confidence: int = 0.90):
 
 def enterTextInput(x: int, y: int, text: str, message: str):
     pag.click(x=x, y=y)
-    pag.write(text)
+    pag.write(text.replace(" ", ""))
     print(f"\n{message}")
     pag.press("enter")
 
@@ -77,7 +77,7 @@ def findAndInputText(imageUrls: list, searchingText: str, errorMessage: str, tex
                 x, y = findImage(imageUrl, searchingText)
                 if x != -1 and y != -1:
                     pag.click(x, y + 60)
-                    pag.write(textToInput)
+                    pag.write(textToInput.replace(" ", ""))
                     pag.press("enter")
                     return {"error": False, "message": None}
             i += 1
