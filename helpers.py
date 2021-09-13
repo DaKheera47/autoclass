@@ -6,6 +6,7 @@ import yaml
 from datetime import datetime
 from collections import OrderedDict
 from rich.progress import Progress
+from win32gui import IsWindowVisible, GetWindowText, EnumWindows, ShowWindow, SetForegroundWindow, SystemParametersInfo
 
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -26,7 +27,6 @@ def findImage(imageUrl: str, confidence: int = 0.90):
 def enterTextInput(x: int, y: int, text: str, message: str):
     pag.click(x=x, y=y)
     pag.write(text.replace(" ", ""))
-    print(f"\n{message}")
     pag.press("enter")
 
 
@@ -65,7 +65,7 @@ def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int
                     if x != -1 and y != -1:
                         pag.click(x, y)
                         progress.stop()
-                        return {"error": False, "message": None}
+                        return {"error": False, "message": None, "coords": {"x": x, "y": y}}
                         break
                     else:
                         # calculating amount to increase based on time taken by image to attempt to find
@@ -155,3 +155,18 @@ def loadFiles():
             sorted(CLASS_INFO.items(), key=lambda x: x[1]["time_weekday"]))
 
     return SETUP, CLASS_INFO
+
+
+def bringWindowToFocus(partial_window_name):
+    def window_enum_handler(hwnd, resultList):
+        if IsWindowVisible(hwnd) and GetWindowText(hwnd) != '':
+            resultList.append((hwnd, GetWindowText(hwnd)))
+    SystemParametersInfo(8193, 0, 2 | 1)
+    handles = []
+    EnumWindows(window_enum_handler, handles)
+    for i in handles:
+        if str(partial_window_name).upper() in str(i[1]).upper():
+            ShowWindow(i[0], 3)
+            SetForegroundWindow(i[0])
+            return True
+    return False

@@ -32,3 +32,5 @@ schedule == 0.6.0
 opencv-python == 4.5.1.48
 
 Pillow == 8.3.2
+
+pywin32 == 301
