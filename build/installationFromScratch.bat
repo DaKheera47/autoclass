@@ -1,3 +1,4 @@
+Title AutoClass By Shaheer Sarfaraz -- Please Be Patient
 @REM elevating to admin
 @REM https://stackoverflow.com/questions/6811372/how-to-code-a-bat-file-to-always-run-as-admin-mode/45382540
 set filepath=%~dp0
