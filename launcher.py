@@ -5,11 +5,10 @@ import yaml
 import sys
 import json
 import cursor
-from helpers import findImageTimeout, enterTextInput, findAndClick, findAndInputText, loadFiles
+from helpers import findAndClick, findAndInputText, loadFiles
 
 cursor.hide()
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
-SETUP, CLASS_INFO = loadFiles()
 
 MSGS = {
     "join": {
@@ -31,7 +30,8 @@ MSGS = {
 }
 
 
-def configureOBS(SETUP):
+def configureOBS():
+    SETUP, CLASS_INFO = loadFiles()
     # start button
     pag.press("winleft")
 
@@ -45,11 +45,10 @@ def configureOBS(SETUP):
     pag.hotkey("alt", "t")
 
     # output timer
-    x, y = findImageTimeout("outputTimer.png", "Searching for output timer")
-    if x != -1 and y != -1:
-        pag.click(x, y)
-    else:
-        print("WTF")
+    response = findAndClick(["outputTimer.png"], "Searching for output timer",
+                            "Unable to find output timer option", timeout=90)
+    if response["error"]:
+        return
 
     # tools
     pag.press("tab", presses=6)
@@ -60,10 +59,11 @@ def configureOBS(SETUP):
 
 
 def main(code, password):
+    SETUP, CLASS_INFO = loadFiles()
     pag.PAUSE = SETUP["delayBetweenActions"]
 
     if SETUP["recordClasses"]:
-        configureOBS(SETUP)
+        configureOBS()
 
     # start button
     pag.press("winleft")
