@@ -18,14 +18,14 @@ choco install python -y
 call RefreshEnv.cmd
 
 @REM cd to initial path
-cd /d %filepath%
-echo %filepath%
+cd /d "%filepath%"
+echo "%filepath%"
 
 @REM getting from git
 git clone https://github.com/DaKheera47/scheduled-class-launcher.git
 
 cd scheduled-class-launcher/build
-echo %cd%
+echo "%cd%"
 
 start cmd /c scheduledClassLauncher.bat
 exit
