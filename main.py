@@ -77,4 +77,4 @@ schedule.every(30).seconds.do(checkForClassTime)
 
 while True:
     schedule.run_pending()
-    time.sleep(5)
+    time.sleep(10)

@@ -35,7 +35,7 @@ def genTable():
         table.add_column("Time", justify="left", style="green")
 
         for cls in list(CLASS_INFO.keys()):
-            code = list(CLASS_INFO[cls].values())[1]
+            code = list(CLASS_INFO[cls].values())[0].replace(" ", "")
 
             if CURR_DAY_NUM == 4:
                 # friday timings
