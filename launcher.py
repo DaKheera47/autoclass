@@ -74,28 +74,31 @@ def main(code, password):
 
     joinBtn = findAndClick(["joinUnsigned.PNG", "joinBtn.png"],
                            MSGS["join"]["searching"],
-                           MSGS["join"]["error"])
+                           MSGS["join"]["error"], confidence=0.99)
     if joinBtn["error"]:
         return joinBtn
 
     # enter code into meeting id field
     joinMeeting = findAndInputText(["joinMeeting.PNG"],
                                    MSGS["enterCode"]["searching"],
-                                   MSGS["enterCode"]["error"], code)
+                                   MSGS["enterCode"]["error"], code,
+                                   confidence=SETUP["globalConfidence"])
     if joinMeeting["error"]:
         return joinMeeting
 
     # enter password into password field
     joinPassword = findAndInputText(["enterMeetingPw.png"],
                                     MSGS["enterPW"]["searching"],
-                                    MSGS["enterPW"]["error"], password)
+                                    MSGS["enterPW"]["error"], password,
+                                    confidence=SETUP["globalConfidence"])
     if joinPassword["error"]:
         return joinPassword
 
     # join with computer audio
     joinWithCompAudioBtn = findAndClick(["joinWithComputerAudioBtn.PNG"],
                                         MSGS["compAudio"]["searching"],
-                                        MSGS["compAudio"]["error"])
+                                        MSGS["compAudio"]["error"],
+                                        confidence=SETUP["globalConfidence"])
     if joinWithCompAudioBtn["error"]:
         return joinWithCompAudioBtn
 

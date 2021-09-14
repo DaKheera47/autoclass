@@ -26,8 +26,6 @@ def startLaunching(className, code_to_use, password_to_use, currTime):
         logging(currTime, className, datetime.today().strftime(
             '%Y-%m-%d'), status["message"])
 
-    checkForClassTime()
-
 
 def startLeaving():
     isMeetingRunning = bringWindowToFocus("Zoom Meeting")
@@ -39,8 +37,6 @@ def startLeaving():
             coords = response["coords"]
             # confirm button
             pag.click(coords["x"], coords["y"] - 50)
-
-    checkForClassTime()
 
 
 def checkForClassTime():
@@ -65,11 +61,15 @@ def checkForClassTime():
             startLaunching(cls[0], code_to_use, password_to_use, currTime)
             return
 
-        # if monday through friday
-        if currDayNum in range(0, 5):
-            if currTime == cls[1]["time_of_leaving_weekday"] or currTime == cls[1]["time_of_leaving_friday"]:
-                startLeaving()
-                return
+        # checking if today is friday before leaving
+        if (currTime == cls[1]["time_of_leaving_friday"] and currDayNum == 4):
+            startLeaving()
+            return
+
+        # checking if today is weekday before leaving
+        if (currTime == cls[1]["time_of_leaving_weekday"] and currDayNum in range(0, 4)):
+            startLeaving()
+            return
 
 
 checkForClassTime()
@@ -77,4 +77,4 @@ schedule.every(30).seconds.do(checkForClassTime)
 
 while True:
     schedule.run_pending()
-    time.sleep(10)
+    time.sleep(15)
