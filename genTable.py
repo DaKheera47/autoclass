@@ -77,7 +77,9 @@ def genTable():
             record = Text.assemble(("Disabled", "black on red"))
 
         table.add_row(
-            "Delay between actions", str(SETUP["delayBetweenActions"]))
+            "Delay between every action taken", f"{SETUP['delayBetweenActions']}s")
+        table.add_row(
+            "Percent of image to match", f"{SETUP['globalConfidence'] * 100}%")
         table.add_row(
             "Require confirmation before joining a class", confirmation)
         table.add_row(
