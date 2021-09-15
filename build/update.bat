@@ -8,6 +8,13 @@ Title AutoClass By Shaheer Sarfaraz -- Updating
 if exist "%temp%\config" rmdir "%temp%\config"
 mkdir "%temp%\config"
 move "..\config\*" "%temp%\config\"
-git pull
+
+git clone https://github.com/DaKheera47/scheduled-class-launcher.git
+
+python update.py
+
+del /f /s /q "./scheduled-class-launcher" 1>nul
+rmdir /s /q "./scheduled-class-launcher"
+
 move "%temp%\config\*" "..\config\"
 pause

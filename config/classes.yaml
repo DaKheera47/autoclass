@@ -1,34 +1,28 @@
-# add any further classes below. follow above syntax. they appear in order of their class timings on the day
-# how to add another class: follow this format
-
 Chemistry:
-    code: "4772336391"
-    password: "4772336391"
-    time_weekday: "08:50"
-    time_of_leaving_weekday: "10:00"
-    time_friday: "08:00"
-    time_of_leaving_friday: "09:20"
-
-Physics:
-    code: "6628203182"
-    password: "6628203182"
-    time_weekday: "10:30"
-    time_of_leaving_weekday: "11:20"
-    time_friday: "11:20"
-    time_of_leaving_friday: "12:00"
-
+  code: '4772336391'
+  password: '4772336391'
+  time_friday: 08:00
+  time_of_leaving_friday: 09:20
+  time_of_leaving_weekday: '10:00'
+  time_weekday: 08:50
 Computer Science:
-    code: "4772336391"
-    password: "4772336391"
-    time_weekday: "11:20"
-    time_of_leaving_weekday: "12:10"
-    time_friday: "00:00"
-    time_of_leaving_friday: "00:00"
-
+  code: '4772336391'
+  password: '4772336391'
+  time_friday: 00:00
+  time_of_leaving_friday: 00:00
+  time_of_leaving_weekday: '12:10'
+  time_weekday: '11:20'
 Maths:
-    code: "6628203182"
-    password: "6628203182"
-    time_weekday: "12:10"
-    time_of_leaving_weekday: "13:00"
-    time_friday: "10:00"
-    time_of_leaving_friday: "11:20"
+  code: '6628203182'
+  password: '6628203182'
+  time_friday: '10:00'
+  time_of_leaving_friday: '11:20'
+  time_of_leaving_weekday: '13:00'
+  time_weekday: '12:10'
+Physics:
+  code: '6628203182'
+  password: '6628203182'
+  time_friday: '11:20'
+  time_of_leaving_friday: '12:00'
+  time_of_leaving_weekday: '11:20'
+  time_weekday: '10:30'

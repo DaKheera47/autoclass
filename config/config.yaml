@@ -1,13 +1,4 @@
-# time to wait before every movement by the computer
 delayBetweenActions: 0.6
-
-# global confidence for screen scraping
 globalConfidence: 0.99
-
-# use `False` or `True`
-# require confirmation before joining class
-requireConfirmationBeforeJoining: True
-
-# use `False` or `True`
-# require confirmation before leaving a class
-requireConfirmationBeforeLeaving: True
+requireConfirmationBeforeJoining: true
+requireConfirmationBeforeLeaving: false
