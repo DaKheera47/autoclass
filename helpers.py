@@ -7,6 +7,7 @@ from datetime import datetime
 from collections import OrderedDict
 from rich.progress import Progress
 from win32gui import IsWindowVisible, GetWindowText, EnumWindows, ShowWindow, SetForegroundWindow, SystemParametersInfo
+CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 def logToTxt(command: str):
@@ -42,9 +43,6 @@ def loadFiles():
             sorted(CLASS_INFO.items(), key=lambda x: x[1]["time_weekday"]))
 
     return SETUP, CLASS_INFO
-
-
-CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
 def clear():

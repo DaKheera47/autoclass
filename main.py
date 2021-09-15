@@ -28,6 +28,7 @@ def startLaunching(className, code_to_use, password_to_use, currTime):
 
 
 def startLeaving():
+    SETUP, CLASS_INFO = loadFiles()
     isConfirmed = "OK"
     if SETUP["requireConfirmationBeforeLeaving"]:
         isConfirmed = pag.confirm(
