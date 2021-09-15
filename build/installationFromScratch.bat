@@ -11,8 +11,7 @@ cd /d "%~dp0" && ( if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs" ) &&
 call RefreshEnv.cmd
 
 @REM installing packages
-choco install obs-studio zoom git -y
-choco install python -y
+choco install python zoom git -y
 
 @REM refreshing path variables
 call RefreshEnv.cmd

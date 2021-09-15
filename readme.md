@@ -1,4 +1,3 @@
-
 # Class Launch Automator by Shaheer Sarfaraz
 
 ## Features
@@ -39,13 +38,13 @@
 ### `firstInstall.bat`
 
 -   Installs all necessary programs needed for the program to work.
--   Installs Zoom (used for classes), OBS Studio (to record classes) & Python (the language of the program)
+-   Installs Zoom (used for classes) & Python (the language of the program)
 -   Will take considerable time, so be patient (~20 minutes on 16mbps internet)
 
 ### `installationFromScratch.bat`
 
 -   Installs all necessary programs needed for the program to work.
--   Installs Zoom (used for classes), OBS Studio (to record classes) & Python (the language of the program)
+-   Installs Zoom (used for classes) & Python (the language of the program)
 -   Additionally, also downloads the source code to the same folder, and executes the `scheduledClassLauncher.bat`
 -   Will take considerable time, so be patient (~20 minutes on 16mbps internet)
 
@@ -67,8 +66,6 @@
     -   `globalConfidence`: [number between 0-1] changes how what percentage similarity should exist between the image on screen and the pre recorded screenshot
     -   `requireConfirmationBeforeJoining`: [True/False] changes if the program will require confirmation before joining a class. A small window opens, which reveals an "OK" button, and a "Cancel" Button. Choosing "OK" will launch the class meeting
     -   `requireConfirmationBeforeLeaving`: [True/False] changes if the program will require confirmation before attempting to leave a class. A small window opens, which reveals an "OK" button, and a "Cancel" Button. Choosing "OK" will leave the class meeting
-    -   `recordClasses`: [True/False] decides if you want to record a class by starting OBS Studio before the meeting
-    -   `timeToRecordClass`: [number between 0-59] decides how long (in minutes) you want the program to set the recording to be
 -   Relaunch the program to see your changes reflected
 
 ## Limitations

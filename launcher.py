@@ -9,7 +9,6 @@ from helpers import findAndClick, findAndInputText, loadFiles
 
 cursor.hide()
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
-
 MSGS = {
     "join": {
         "searching": "Searching Join Button",
@@ -30,41 +29,9 @@ MSGS = {
 }
 
 
-def configureOBS():
-    SETUP, CLASS_INFO = loadFiles()
-    # start button
-    pag.press("winleft")
-
-    # launch zoom
-    pag.write("OBS")
-    pag.press("enter")
-
-    # tools
-    response = findAndClick(["tools.png"], "Searching for tools in top bar",
-                            "Unable to find tools in top bar", timeout=90)
-    if response["error"]:
-        return
-
-    # output timer
-    response = findAndClick(["outputTimer.png"], "Searching for output timer",
-                            "Unable to find output timer option", timeout=90)
-    if response["error"]:
-        return
-
-    # tools
-    pag.press("tab", presses=6)
-    pag.write(str(SETUP["timeToRecordClass"]))
-    # going to start button
-    pag.press("tab", presses=2)
-    pag.press("enter")
-
-
 def main(code, password):
     SETUP, CLASS_INFO = loadFiles()
     pag.PAUSE = SETUP["delayBetweenActions"]
-
-    if SETUP["recordClasses"]:
-        configureOBS()
 
     # start button
     pag.press("winleft")

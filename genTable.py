@@ -64,10 +64,6 @@ def genTable():
             leaveConfirmation = Text.assemble(("Enabled", "black on green"))
         else:
             leaveConfirmation = Text.assemble(("Disabled", "black on red"))
-        if SETUP["recordClasses"]:
-            record = Text.assemble(("Enabled", "black on green"))
-        else:
-            record = Text.assemble(("Disabled", "black on red"))
 
         table = Table()
         table.add_column("Description", justify="left",
@@ -82,8 +78,6 @@ def genTable():
             "Require confirmation before joining a class", joinConfirmation)
         table.add_row(
             "Require confirmation before leaving a class", leaveConfirmation)
-        table.add_row(
-            "Record classes with OBS Studio", record)
 
         return table
 
