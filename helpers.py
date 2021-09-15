@@ -9,6 +9,12 @@ from rich.progress import Progress
 from win32gui import IsWindowVisible, GetWindowText, EnumWindows, ShowWindow, SetForegroundWindow, SystemParametersInfo
 
 
+def logToTxt(command: str):
+    # logging command executed
+    with open(f"{CUR_PATH}/out/log.txt", "a") as f:
+        f.write(f"{command}\n")
+
+
 def loadFiles():
     CURR_DAY_NUM = datetime.today().weekday()
     # importing external files
@@ -39,7 +45,6 @@ def loadFiles():
 
 
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
-SETUP, CLASS_INFO = loadFiles()
 
 
 def clear():
@@ -96,6 +101,7 @@ def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int
                     if x != -1 and y != -1:
                         pag.click(x, y)
                         progress.stop()
+                        logToTxt(message)
                         return {"error": False, "message": None, "coords": {"x": x, "y": y}}
                         break
                     else:
@@ -106,6 +112,7 @@ def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int
                         progress.update(task, advance=amountToIncrease)
             else:
                 progress.stop()
+                logToTxt(errorMessage)
                 return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
 
@@ -128,6 +135,7 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
                         pag.write(textToInput.replace(" ", ""))
                         pag.press("enter")
                         progress.stop()
+                        logToTxt(message)
                         return {"error": False, "message": None}
                     else:
                         # calculating amount to increase based on time taken by image to attempt to find
@@ -136,6 +144,7 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
                         i += amountToIncrease
                         progress.update(task, advance=amountToIncrease)
             else:
+                logToTxt(errorMessage)
                 progress.stop()
                 return {"error": True, "message": f"Timed Out: {errorMessage}"}
 

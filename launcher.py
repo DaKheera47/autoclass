@@ -39,10 +39,11 @@ def configureOBS():
     pag.write("OBS")
     pag.press("enter")
 
-    time.sleep(5)
-
     # tools
-    pag.hotkey("alt", "t")
+    response = findAndClick(["tools.png"], "Searching for tools in top bar",
+                            "Unable to find tools in top bar", timeout=90)
+    if response["error"]:
+        return
 
     # output timer
     response = findAndClick(["outputTimer.png"], "Searching for output timer",
@@ -134,4 +135,4 @@ if __name__ == '__main__':
 
         main(chosenClass["code"], chosenClass["password"])
     except Exception as e:
-        print(f"Line 88: {e}")
+        print(f"Line 138: {e}")
