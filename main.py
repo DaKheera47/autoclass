@@ -46,13 +46,7 @@ def startLeaving():
                 coords = response["coords"]
                 # confirm button
                 pag.click(coords["x"], coords["y"] - 50)
-
-        isObsRunning = bringWindowToFocus("OBS")
-        if isObsRunning:
-            pag.hotkey("alt", "f4")
-            response = findAndClick(["confirmCancelRecordings.png"], "Attempting to cancel recordings",
-                                    "Unable to find cancel recordings or recording wasn't active", timeout=45)
-            
+    
     checkForClassTime()
 
 
@@ -60,8 +54,8 @@ def checkForClassTime():
     SETUP, CLASS_INFO = loadFiles()
     clear()
     genTable()
-    currTime = datetime.now().strftime("%H:%M")
-    currDayNum = datetime.today().weekday()
+    CURR_TIME = datetime.now().strftime("%H:%M")
+    CURR_DAY_NUM = datetime.today().weekday()
 
     for cls in CLASS_INFO.items():
         # getting class code
@@ -69,22 +63,22 @@ def checkForClassTime():
         password_to_use = str(CLASS_INFO[cls[0]]["password"])
 
         # checking if today is between monday and thursday before joining
-        if (currTime == cls[1]["time_weekday"] and currDayNum in range(0, 4)):
-            startLaunching(cls[0], code_to_use, password_to_use, currTime)
+        if (CURR_TIME == cls[1]["time_weekday"] and CURR_DAY_NUM in range(0, 4)):
+            startLaunching(cls[0], code_to_use, password_to_use, CURR_TIME)
             return
 
         # checking if today is friday before joining
-        if (currTime == cls[1]["time_friday"] and currDayNum == 4):
-            startLaunching(cls[0], code_to_use, password_to_use, currTime)
+        if (CURR_TIME == cls[1]["time_friday"] and CURR_DAY_NUM == 4):
+            startLaunching(cls[0], code_to_use, password_to_use, CURR_TIME)
             return
 
         # checking if today is friday before leaving
-        if (currTime == cls[1]["time_of_leaving_friday"] and currDayNum == 4):
+        if (CURR_TIME == cls[1]["time_of_leaving_friday"] and CURR_DAY_NUM == 4):
             startLeaving()
             return
 
         # checking if today is weekday before leaving
-        if (currTime == cls[1]["time_of_leaving_weekday"] and currDayNum in range(0, 4)):
+        if (CURR_TIME == cls[1]["time_of_leaving_weekday"] and CURR_DAY_NUM in range(0, 4)):
             startLeaving()
             return
 
