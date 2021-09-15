@@ -52,6 +52,8 @@ def startLeaving():
             pag.hotkey("alt", "f4")
             response = findAndClick(["confirmCancelRecordings.png"], "Attempting to cancel recordings",
                                     "Unable to find cancel recordings or recording wasn't active", timeout=45)
+            
+    checkForClassTime()
 
 
 def checkForClassTime():
