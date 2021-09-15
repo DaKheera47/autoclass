@@ -14,7 +14,7 @@ def startLaunching(className, code_to_use, password_to_use, currTime):
     # if confirmation is required
     SETUP, CLASS_INFO = loadFiles()
     isConfirmed = "OK"
-    if SETUP["requireConfirmation"]:
+    if SETUP["requireConfirmationBeforeJoining"]:
         isConfirmed = pag.confirm(
             text=f'Do you want to join {className} class?',
             title=f'Confirm joining of {className} class',
@@ -28,20 +28,29 @@ def startLaunching(className, code_to_use, password_to_use, currTime):
 
 
 def startLeaving():
-    isMeetingRunning = bringWindowToFocus("Zoom Meeting")
-    if isMeetingRunning:
-        response = findAndClick(["leaveBtn.png"], "Attempting to leave meeting",
-                                "Unable to find leave button", timeout=90)
-        if not response["error"]:
-            coords = response["coords"]
-            # confirm button
-            pag.click(coords["x"], coords["y"] - 50)
+    isConfirmed = "OK"
+    if SETUP["requireConfirmationBeforeLeaving"]:
+        isConfirmed = pag.confirm(
+            text=f'Are you sure you want to leave the currently running class?',
+            title=f'Confirm leaving class?',
+            buttons=['OK', 'Cancel']
+        )
 
-    isObsRunning = bringWindowToFocus("OBS")
-    if isObsRunning:
-        pag.hotkey("alt", "f4")
-        response = findAndClick(["confirmCancelRecordings.png"], "Attempting to cancel recordings",
-                                "Unable to find cancel recordings or recording wasn't active", timeout=45)
+    if isConfirmed == "OK":
+        isMeetingRunning = bringWindowToFocus("Zoom Meeting")
+        if isMeetingRunning:
+            response = findAndClick(["leaveBtn.png"], "Attempting to leave meeting",
+                                    "Unable to find leave button", timeout=90)
+            if not response["error"]:
+                coords = response["coords"]
+                # confirm button
+                pag.click(coords["x"], coords["y"] - 50)
+
+        isObsRunning = bringWindowToFocus("OBS")
+        if isObsRunning:
+            pag.hotkey("alt", "f4")
+            response = findAndClick(["confirmCancelRecordings.png"], "Attempting to cancel recordings",
+                                    "Unable to find cancel recordings or recording wasn't active", timeout=45)
 
 
 def checkForClassTime():

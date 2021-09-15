@@ -28,7 +28,7 @@ def genTable():
 
     def genClassList():
         table = Table(title="Class List", caption=Text.assemble(
-            (f"{CURR_TIME} \n {CURR_DATE} - {CURR_DAY}", "bold green")))
+            (f"Time Now: {CURR_TIME} \n {CURR_DATE} - {CURR_DAY}", "bold green")))
 
         table.add_column("Title", justify="left", style="cyan", no_wrap=True)
         table.add_column("Code", justify="left", style="cyan")
@@ -56,32 +56,32 @@ def genTable():
         return table
 
     def genConfig():
-        if SETUP["requireConfirmation"]:
-            confirmation = Text.assemble(("Enabled", "black on green"))
+        if SETUP["requireConfirmationBeforeJoining"]:
+            joinConfirmation = Text.assemble(("Enabled", "black on green"))
         else:
-            confirmation = Text.assemble(("Disabled", "black on red"))
-
-        table = Table()
-
-        table.add_column("Description", justify="left",
-                         style="cyan", no_wrap=True)
-        table.add_column("Setting", justify="left")
-
-        if SETUP["requireConfirmation"]:
-            confirmation = Text.assemble(("Enabled", "black on green"))
+            joinConfirmation = Text.assemble(("Disabled", "black on red"))
+        if SETUP["requireConfirmationBeforeLeaving"]:
+            leaveConfirmation = Text.assemble(("Enabled", "black on green"))
         else:
-            confirmation = Text.assemble(("Disabled", "black on red"))
+            leaveConfirmation = Text.assemble(("Disabled", "black on red"))
         if SETUP["recordClasses"]:
             record = Text.assemble(("Enabled", "black on green"))
         else:
             record = Text.assemble(("Disabled", "black on red"))
+
+        table = Table()
+        table.add_column("Description", justify="left",
+                         style="cyan", no_wrap=True)
+        table.add_column("Setting", justify="left")
 
         table.add_row(
             "Delay between every action taken", f"{SETUP['delayBetweenActions']}s")
         table.add_row(
             "Percent of image to match", f"{SETUP['globalConfidence'] * 100}%")
         table.add_row(
-            "Require confirmation before joining a class", confirmation)
+            "Require confirmation before joining a class", joinConfirmation)
+        table.add_row(
+            "Require confirmation before leaving a class", leaveConfirmation)
         table.add_row(
             "Record classes with OBS Studio", record)
 
@@ -129,10 +129,6 @@ def genTable():
     layout["middle"]["left"].update(
         Markdown(instructionsMarkdown)
     )
-    if SETUP["requireConfirmation"]:
-        confirmation = Text.assemble(("Enabled", "black on green"))
-    else:
-        confirmation = Text.assemble(("Disabled", "black on red"))
 
     layout["middle"]["right"].update(
         Padding(

@@ -6,11 +6,15 @@ globalConfidence: 0.99
 
 # use `False` or `True`
 # require confirmation before joining class
-requireConfirmation: False
+requireConfirmationBeforeJoining: False
+
+# use `False` or `True`
+# require confirmation before leaving a class
+requireConfirmationBeforeLeaving: True
 
 # use `False` or `True`
 # record classes
-recordClasses: False
+recordClasses: True
 
 # in minutes
 # maximum 59 minutes

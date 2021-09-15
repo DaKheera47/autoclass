@@ -63,10 +63,12 @@
 -   Format:
     -   `variableName`: [possible values] description
 -   Variable's in configuration:
-    -   `delayBetweenActions`: [number] changes the delay (in s) between every action that the computer will perform. Decreasing it will make the program faster, but will also result in more chances of failure. If you have a somewhat slow computer, you might want to increase this value
-    -   `requireConfirmation`: [True/False] changes if the program will require confirmation before joining a class. A small window opens, which reveals an "OK" button, and a "Cancel" Button. Choosing "OK" will launch the class meeting
+    -   `delayBetweenActions`: [number] changes the delay (in seconds) between every action that the computer will perform. Decreasing it will make the program faster, but will also result in more chances of failure. If you have a somewhat slow computer, you might want to increase this value
+    -   `globalConfidence`: [number between 0-1] changes how what percentage similarity should exist between the image on screen and the pre recorded screenshot
+    -   `requireConfirmationBeforeJoining`: [True/False] changes if the program will require confirmation before joining a class. A small window opens, which reveals an "OK" button, and a "Cancel" Button. Choosing "OK" will launch the class meeting
+    -   `requireConfirmationBeforeLeaving`: [True/False] changes if the program will require confirmation before attempting to leave a class. A small window opens, which reveals an "OK" button, and a "Cancel" Button. Choosing "OK" will leave the class meeting
     -   `recordClasses`: [True/False] decides if you want to record a class by starting OBS Studio before the meeting
-    -   `timeToRecordClass`: [number] decides how long you want the program to set the recording to be
+    -   `timeToRecordClass`: [number between 0-59] decides how long (in minutes) you want the program to set the recording to be
 -   Relaunch the program to see your changes reflected
 
 ## Limitations
