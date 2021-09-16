@@ -35,14 +35,14 @@ def genTable():
         table.add_column("Time", justify="left", style="green")
 
         for cls in list(CLASS_INFO.keys()):
-            code = list(CLASS_INFO[cls].values())[0].replace(" ", "")
+            code = str(CLASS_INFO[cls]["code"]).replace(" ", "")
 
             if CURR_DAY_NUM == 4:
                 # friday timings
-                time = list(CLASS_INFO[cls].values())[3]
+                time = str(CLASS_INFO[cls]["time_friday"])
             else:
                 # any other day
-                time = list(CLASS_INFO[cls].values())[2]
+                time = str(CLASS_INFO[cls]["time_weekday"])
 
             if CURR_TIME > time:
                 # if time has passed then yellow
@@ -91,7 +91,7 @@ def genTable():
 -   Extract the files to any folder (always keep them in the same folder structure)
 -   See available features in the `build` folder 
 -   You may create a shortcut of any of these files
-    """
+"""
 
     # creating UI layout
     layout = Layout()
