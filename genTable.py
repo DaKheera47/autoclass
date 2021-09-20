@@ -32,26 +32,41 @@ def genTable():
 
         table.add_column("Title", justify="left", style="cyan", no_wrap=True)
         table.add_column("Code", justify="left", style="cyan")
-        table.add_column("Time", justify="left", style="green")
+        table.add_column("Join Time", justify="center", style="green")
+        table.add_column("Leave Time", justify="center", style="green")
+        table.add_column("Class Duration", justify="center", style="cyan")
 
         for cls in list(CLASS_INFO.keys()):
             code = str(CLASS_INFO[cls]["code"]).replace(" ", "")
 
             if CURR_DAY_NUM == 4:
                 # friday timings
-                time = str(CLASS_INFO[cls]["time_friday"])
+                timeOfJoining = str(CLASS_INFO[cls]["time_friday"])
+                timeOfLeaving = str(CLASS_INFO[cls]["time_of_leaving_friday"])
             else:
                 # any other day
-                time = str(CLASS_INFO[cls]["time_weekday"])
+                timeOfJoining = str(CLASS_INFO[cls]["time_weekday"])
+                timeOfLeaving = str(CLASS_INFO[cls]["time_of_leaving_weekday"])
 
-            if CURR_TIME > time:
+            # https://stackoverflow.com/questions/3096953/how-to-calculate-the-time-interval-between-two-time-strings
+            duration = datetime.strptime(
+                timeOfLeaving, "%H:%M") - datetime.strptime(timeOfJoining, "%H:%M")
+
+            if CURR_TIME > timeOfJoining:
                 # if time has passed then yellow
-                time = Text.assemble((f"{time}", "yellow"))
+                timeOfJoining = Text.assemble((f"{timeOfJoining}", "yellow"))
             else:
                 # if time if yet to come then green
-                time = Text.assemble((f"{time}", "green"))
+                timeOfJoining = Text.assemble((f"{timeOfJoining}", "green"))
 
-            table.add_row(cls, code, time)
+            if CURR_TIME > timeOfLeaving:
+                # if time has passed then yellow
+                timeOfLeaving = Text.assemble((f"{timeOfLeaving}", "yellow"))
+            else:
+                # if time if yet to come then green
+                timeOfLeaving = Text.assemble((f"{timeOfLeaving}", "green"))
+
+            table.add_row(cls, code, timeOfJoining, timeOfLeaving, str(duration)[:-3])
 
         return table
 
