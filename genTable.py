@@ -102,10 +102,8 @@ def genTable():
         "Made By Shaheer ", ("Sarfaraz", "bold green"))
     instructionsMarkdown = """
 #  Instructions
--   Download the .zip file given in the Github repository
--   Extract the files to any folder (always keep them in the same folder structure)
--   See available features in the `build` folder 
--   You may create a shortcut of any of these files
+-   Change the default class by opening and changing the `classes.yaml` in the `config` folder
+-   Update the configuration by referring to the readme on the GitHub Page
 """
 
     # creating UI layout
