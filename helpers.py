@@ -42,8 +42,8 @@ def loadFiles():
         SAMPLE_CONFIG = {
             "delayBetweenActions": 0.6,
             "globalConfidence": 0.99,
-            "requireConfirmationBeforeJoining": False,
-            "requireConfirmationBeforeLeaving": False
+            "requireConfirmationBeforeJoining": True,
+            "requireConfirmationBeforeLeaving": True
         }
 
         yaml.dump(SAMPLE_CONFIG, file)

@@ -72,6 +72,9 @@ def main(code, password):
 
     # force full screen zoom
     pag.hotkey("winleft", "up")
+    
+    # show controls at all times
+    pag.press("alt", presses=2)
 
     return {"error": False, "message": "Success"}
 

@@ -84,8 +84,8 @@ def checkForClassTime():
 
 
 checkForClassTime()
-schedule.every(30).seconds.do(checkForClassTime)
+schedule.every(60).seconds.do(checkForClassTime)
 
 while True:
     schedule.run_pending()
-    time.sleep(15)
+    time.sleep(30)
