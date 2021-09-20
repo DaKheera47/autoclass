@@ -1,4 +1,0 @@
-delayBetweenActions: 0.6
-globalConfidence: 0.99
-requireConfirmationBeforeJoining: true
-requireConfirmationBeforeLeaving: false

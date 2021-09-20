@@ -1,7 +1,0 @@
-Searching for tools in top bar
-Searching for output timer
-Searching Join Button
-Searching Join Meeting Text Input
-Searching for Password Text Input
-Have Not Been Accepted Into Class
-Attempting to cancel recordings

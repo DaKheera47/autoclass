@@ -10,14 +10,45 @@ from win32gui import IsWindowVisible, GetWindowText, EnumWindows, ShowWindow, Se
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 
-def logToTxt(command: str):
-    # logging command executed
-    with open(f"{CUR_PATH}/out/log.txt", "a") as f:
-        f.write(f"{command}\n")
-
-
 def loadFiles():
     CURR_DAY_NUM = datetime.today().weekday()
+
+    if not os.path.exists(os.path.dirname(f"{CUR_PATH}/config/classes.yaml")):
+        try:
+            os.makedirs(os.path.dirname(f"{CUR_PATH}/config/classes.yaml"))
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+
+    # making new classes file if it doesnt already exist
+    if not os.path.exists(f"{CUR_PATH}/config/classes.yaml"):
+        file = open(f"{CUR_PATH}/config/classes.yaml", "w")
+        SAMPLE_CLASS = {
+            "Chemistry": {
+                "code": '4772336391',
+                "password": '4772336391',
+                "time_friday": "08:00",
+                "time_of_leaving_friday": "09:20",
+                "time_of_leaving_weekday": "10:00",
+                "time_weekday": "08:50"
+            }
+        }
+
+        yaml.dump(SAMPLE_CLASS, file)
+        file.close()
+
+    if not os.path.exists(f"{CUR_PATH}/config/config.yaml"):
+        file = open(f"{CUR_PATH}/config/config.yaml", "w")
+        SAMPLE_CONFIG = {
+            "delayBetweenActions": 0.6,
+            "globalConfidence": 0.99,
+            "requireConfirmationBeforeJoining": False,
+            "requireConfirmationBeforeLeaving": False
+        }
+
+        yaml.dump(SAMPLE_CONFIG, file)
+        file.close()
+
     # importing external files
     with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
         try:
@@ -99,7 +130,6 @@ def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int
                     if x != -1 and y != -1:
                         pag.click(x, y)
                         progress.stop()
-                        logToTxt(message)
                         return {"error": False, "message": None, "coords": {"x": x, "y": y}}
                         break
                     else:
@@ -110,7 +140,6 @@ def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int
                         progress.update(task, advance=amountToIncrease)
             else:
                 progress.stop()
-                logToTxt(errorMessage)
                 return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
 
@@ -133,7 +162,6 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
                         pag.write(textToInput.replace(" ", ""))
                         pag.press("enter")
                         progress.stop()
-                        logToTxt(message)
                         return {"error": False, "message": None}
                     else:
                         # calculating amount to increase based on time taken by image to attempt to find
@@ -142,12 +170,25 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
                         i += amountToIncrease
                         progress.update(task, advance=amountToIncrease)
             else:
-                logToTxt(errorMessage)
                 progress.stop()
                 return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
 
 def logging(time: str, className: str, date: str, status: str):
+    if not os.path.exists(os.path.dirname(f"{CUR_PATH}/out/log.json")):
+        try:
+            os.makedirs(os.path.dirname(f"{CUR_PATH}/out/log.json"))
+        except OSError as exc:  # Guard against race condition
+            if exc.errno != errno.EEXIST:
+                raise
+
+    # making new classes file if it doesnt already exist
+    if not os.path.exists(f"{CUR_PATH}/out/log.json"):
+        file = open(f"{CUR_PATH}/out/log.json", "w")
+        placeholder = []
+        json.dump(placeholder, file)
+        file.close()
+
     # logging classes entered
     currClassInfo = {
         "time": time,
