@@ -75,3 +75,5 @@ def writeToTemp():
 
 
 writeToTemp()
+print(FOREIGN_CLASS_INFO)
+print(FOREIGN_SETUP)
