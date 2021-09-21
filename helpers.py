@@ -1,3 +1,4 @@
+import cursor
 import os
 import time
 import pyautogui as pag
@@ -8,6 +9,8 @@ from collections import OrderedDict
 from rich.progress import Progress
 from win32gui import IsWindowVisible, GetWindowText, EnumWindows, ShowWindow, SetForegroundWindow, SystemParametersInfo
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
+cursor.hide()
+defaultTimeout = 600
 
 
 def loadFiles():
@@ -95,7 +98,7 @@ def enterTextInput(x: int, y: int, text: str, message: str):
     pag.press("enter")
 
 
-def findImageTimeout(imageUrl: str, message: str, timeout: int = 10 * 60, confidence: int = 0.90):
+def findImageTimeout(imageUrl: str, message: str, timeout: int = defaultTimeout, confidence: int = 0.90):
     i = 1
     while True:
         if i <= timeout:
@@ -113,7 +116,7 @@ def findImageTimeout(imageUrl: str, message: str, timeout: int = 10 * 60, confid
     return (x, y)
 
 
-def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int = 60 * 10, confidence: int = 0.95):
+def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int = defaultTimeout, confidence: int = 0.95):
     output = {}
     i = 0
 
@@ -143,7 +146,7 @@ def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int
                 return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
 
-def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInput: str, timeout: int = 60 * 10, confidence: int = 0.95):
+def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInput: str, timeout: int = defaultTimeout, confidence: int = 0.95):
     output = {}
     i = 0
 
@@ -174,7 +177,7 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
                 return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
 
-def logging(time: str, className: str, date: str, status: str):
+def logging(message: str):
     if not os.path.exists(os.path.dirname(f"{CUR_PATH}/out/log.json")):
         try:
             os.makedirs(os.path.dirname(f"{CUR_PATH}/out/log.json"))
@@ -189,19 +192,21 @@ def logging(time: str, className: str, date: str, status: str):
         json.dump(placeholder, file)
         file.close()
 
-    # logging classes entered
-    currClassInfo = {
-        "time": time,
-        "className": className,
-        "date": date,
-        "status": status,
+    CURR_TIME = datetime.now().strftime("%H:%M")
+    CURR_DATE = datetime.now().strftime("%d-%m-%Y")
+
+    finalOutput = {
+        "time": CURR_TIME,
+        "date": CURR_DATE,
+        "message": message,
     }
+
     with open(f"{CUR_PATH}/out/log.json", "r+") as f:
         output = []
         fileData = json.loads(f.read())
         for entry in fileData:
             output.append(entry)
-        output.append(currClassInfo)
+        output.append(finalOutput)
 
         f.seek(0)
         json.dump(output, f)
@@ -211,7 +216,7 @@ def bringWindowToFocus(partial_window_name):
     def window_enum_handler(hwnd, resultList):
         if IsWindowVisible(hwnd) and GetWindowText(hwnd) != '':
             resultList.append((hwnd, GetWindowText(hwnd)))
-    SystemParametersInfo(8193, 0, 2 | 1)
+    # SystemParametersInfo(8193, 0, 2 | 1)
     handles = []
     EnumWindows(window_enum_handler, handles)
     for i in handles:
@@ -227,7 +232,7 @@ def getNextClass():
     CURR_TIME = datetime.now().strftime("%H:%M")
 
     # find next class
-    for ind, cls in enumerate(list(CLASS_INFO.keys())):
+    for cls in list(CLASS_INFO.keys()):
         if CURR_TIME < CLASS_INFO[cls]["time_weekday"]:
             code = str(CLASS_INFO[cls])
             return cls
