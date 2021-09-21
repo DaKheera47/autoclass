@@ -11,7 +11,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.padding import Padding
 from datetime import datetime
-from helpers import loadFiles
+from helpers import loadFiles, getNextClass
 import os
 import cursor
 cursor.hide()
@@ -27,8 +27,27 @@ def genTable():
     SETUP, CLASS_INFO = loadFiles()
 
     def genClassList():
-        table = Table(title="Class List", caption=Text.assemble(
-            (f"Time Now: {CURR_TIME} \n {CURR_DATE} - {CURR_DAY}", "bold green")))
+        
+        try:
+            nextClassName = getNextClass()
+                    
+            nextClassTime = CLASS_INFO[getNextClass()]["time_weekday"]
+
+            timeTillNextClass = str(datetime.strptime(
+                nextClassTime, "%H:%M") - datetime.strptime(CURR_TIME, "%H:%M"))[:-3]
+
+            tableContent = Text.assemble(
+            (f"""Time Now: {CURR_TIME}
+{CURR_DATE} - {CURR_DAY}
+Next class: {getNextClass()} in {timeTillNextClass}
+""", "bold green"))
+        except:
+            tableContent = Text.assemble(
+            (f"""Time Now: {CURR_TIME}
+{CURR_DATE} - {CURR_DAY}
+""", "bold green"))
+
+        table = Table(title="Class List", caption=tableContent)
 
         table.add_column("Title", justify="left", style="cyan", no_wrap=True)
         table.add_column("Code", justify="left", style="cyan")
@@ -66,7 +85,8 @@ def genTable():
                 # if time if yet to come then green
                 timeOfLeaving = Text.assemble((f"{timeOfLeaving}", "green"))
 
-            table.add_row(cls, code, timeOfJoining, timeOfLeaving, str(duration)[:-3])
+            table.add_row(cls, code, timeOfJoining,
+                          timeOfLeaving, str(duration)[:-3])
 
         return table
 
@@ -117,8 +137,7 @@ def genTable():
         Text.assemble("Made By Shaheer ", ("Sarfaraz", "bold green")),
     )
     bottomLeftComponents = Group(
-        Text.assemble(("BOOM ZOOM LAUNCHER", "bold green")),
-        Text.assemble(("If You Snitch You A Bitch", "bold red")),
+        Text.assemble(("AutoClass", "bold green")),
     )
     layout["middle"].split_row(
         Layout(name="left"),

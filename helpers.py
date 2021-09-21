@@ -220,3 +220,14 @@ def bringWindowToFocus(partial_window_name):
             SetForegroundWindow(i[0])
             return True
     return False
+
+
+def getNextClass():
+    SETUP, CLASS_INFO = loadFiles()
+    CURR_TIME = datetime.now().strftime("%H:%M")
+
+    # find next class
+    for ind, cls in enumerate(list(CLASS_INFO.keys())):
+        if CURR_TIME < CLASS_INFO[cls]["time_weekday"]:
+            code = str(CLASS_INFO[cls])
+            return cls
