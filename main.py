@@ -5,12 +5,12 @@ from helpers import clear, logging, loadFiles, bringWindowToFocus, findAndClick
 from genTable import genTable
 import schedule
 from datetime import datetime
-import cursor
 import os
+import cursor
 cursor.hide()
 
 
-def startLaunching(className, code_to_use, password_to_use, currTime):
+def startLaunching(className, code_to_use, password_to_use):
     # if confirmation is required
     SETUP, CLASS_INFO = loadFiles()
     isConfirmed = "OK"
@@ -23,8 +23,7 @@ def startLaunching(className, code_to_use, password_to_use, currTime):
 
     if isConfirmed == "OK":
         status = launcherMain(code_to_use, password_to_use)
-        logging(currTime, className, datetime.today().strftime(
-            '%Y-%m-%d'), status["message"])
+        logging(status["message"])
 
 
 def startLeaving():
@@ -46,16 +45,18 @@ def startLeaving():
                 coords = response["coords"]
                 # confirm button
                 pag.click(coords["x"], coords["y"] - 50)
-    
-    checkForClassTime()
+
+                logging(f"Successfully left a meeting")
+        else:
+            logging(f"Meeting was not running")
 
 
 def checkForClassTime():
     SETUP, CLASS_INFO = loadFiles()
-    clear()
-    genTable()
     CURR_TIME = datetime.now().strftime("%H:%M")
     CURR_DAY_NUM = datetime.today().weekday()
+    clear()
+    genTable()
 
     for cls in CLASS_INFO.items():
         # getting class code
@@ -64,12 +65,12 @@ def checkForClassTime():
 
         # checking if today is between monday and thursday before joining
         if (CURR_TIME == cls[1]["time_weekday"] and CURR_DAY_NUM in range(0, 4)):
-            startLaunching(cls[0], code_to_use, password_to_use, CURR_TIME)
+            startLaunching(cls[0], code_to_use, password_to_use)
             return
 
         # checking if today is friday before joining
         if (CURR_TIME == cls[1]["time_friday"] and CURR_DAY_NUM == 4):
-            startLaunching(cls[0], code_to_use, password_to_use, CURR_TIME)
+            startLaunching(cls[0], code_to_use, password_to_use)
             return
 
         # checking if today is friday before leaving
