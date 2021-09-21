@@ -23,32 +23,23 @@ def genTable():
     CURR_DATE = datetime.now().strftime("%d-%m-%Y")
     CURR_DAY = datetime.now().strftime("%A")
     CURR_DAY_NUM = datetime.today().weekday()
-
     SETUP, CLASS_INFO = loadFiles()
 
     def genClassList():
-        
         try:
             nextClassName = getNextClass()
-                    
             nextClassTime = CLASS_INFO[getNextClass()]["time_weekday"]
-
             timeTillNextClass = str(datetime.strptime(
                 nextClassTime, "%H:%M") - datetime.strptime(CURR_TIME, "%H:%M"))[:-3]
 
-            tableContent = Text.assemble(
-            (f"""Time Now: {CURR_TIME}
-{CURR_DATE} - {CURR_DAY}
-Next class: {getNextClass()} in {timeTillNextClass}
-""", "bold green"))
-        except:
-            tableContent = Text.assemble(
-            (f"""Time Now: {CURR_TIME}
-{CURR_DATE} - {CURR_DAY}
-""", "bold green"))
+            tableContent = Text.assemble((
+                f"Last Refreshed: {CURR_TIME} \n {CURR_DATE} - {CURR_DAY} \n Next class: {getNextClass()} in {timeTillNextClass}",
+                "bold green"))
+        except Exception as e:
+            tableContent = Text.assemble((
+                f"Last Refreshed: {CURR_TIME} \n {CURR_DATE} - {CURR_DAY} \n", "bold green"))
 
         table = Table(title="Class List", caption=tableContent)
-
         table.add_column("Title", justify="left", style="cyan", no_wrap=True)
         table.add_column("Code", justify="left", style="cyan")
         table.add_column("Join Time", justify="center", style="green")
