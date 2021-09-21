@@ -4,23 +4,23 @@ import os
 import yaml
 import sys
 import json
-import cursor
 from helpers import findAndClick, findAndInputText, loadFiles
-
+import cursor
 cursor.hide()
+
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 MSGS = {
     "join": {
-        "searching": "Searching Join Button",
-        "error": "Couldn't find Join Button",
+        "searching": "Locating Join Button",
+        "error": "Unable to find Join Button",
     },
     "enterCode": {
-        "searching": "Searching Join Meeting Text Input",
-        "error": "Couldn't find Join Meeting Text Input",
+        "searching": "Locating Join Meeting Text Input",
+        "error": "Unable to find Join Meeting Text Input",
     },
     "enterPW": {
-        "searching": "Searching for Password Text Input",
-        "error": "Couldn't find Password Text Input",
+        "searching": "Locating Password Text Input",
+        "error": "Unable to find Password Text Input",
     },
     "compAudio": {
         "searching": "Have Not Been Accepted Into Class",
@@ -72,7 +72,7 @@ def main(code, password):
 
     # force full screen zoom
     pag.hotkey("winleft", "up")
-    
+
     # show controls at all times
     pag.press("alt", presses=2)
 
