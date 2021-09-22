@@ -4,7 +4,7 @@ import os
 import yaml
 import sys
 import json
-from helpers import findAndClick, findAndInputText, loadFiles
+from helpers import findAndClick, findAndInputText, loadFiles, clear
 import cursor
 cursor.hide()
 
@@ -81,6 +81,7 @@ def main(code, password):
 
 # if this file is ran directly
 if __name__ == '__main__':
+    clear()
     with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
         try:
             CLASS_INFO = yaml.safe_load(stream)
