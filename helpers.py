@@ -27,13 +27,13 @@ def loadFiles():
     if not os.path.exists(f"{CUR_PATH}/config/classes.yaml"):
         file = open(f"{CUR_PATH}/config/classes.yaml", "w")
         SAMPLE_CLASS = {
-            "Chemistry": {
-                "code": '4772336391',
-                "password": '4772336391',
-                "time_friday": "08:00",
-                "time_of_leaving_friday": "09:20",
-                "time_of_leaving_weekday": "10:00",
-                "time_weekday": "08:50"
+            "Default Class": {
+                "code": 'Change code',
+                "password": 'Change Password',
+                "time_friday": "00:00",
+                "time_of_leaving_friday": "00:00",
+                "time_of_leaving_weekday": "00:00",
+                "time_weekday": "00:00"
             }
         }
 
