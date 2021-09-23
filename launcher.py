@@ -4,7 +4,8 @@ import os
 import yaml
 import sys
 import json
-from helpers import findAndClick, findAndInputText, loadFiles, clear
+from datetime import datetime
+from helpers import findAndClick, findAndInputText, loadFiles, clear, bringWindowToFocus, logging
 import cursor
 cursor.hide()
 
@@ -29,7 +30,7 @@ MSGS = {
 }
 
 
-def main(code, password):
+def launchClass(code, password):
     SETUP, CLASS_INFO = loadFiles()
     pag.PAUSE = SETUP["delayBetweenActions"]
 
@@ -79,6 +80,50 @@ def main(code, password):
     return {"error": False, "message": "Success"}
 
 
+def startLaunching(className, code_to_use, password_to_use):
+    # if confirmation is required
+    SETUP, CLASS_INFO = loadFiles()
+    isConfirmed = "OK"
+    if SETUP["requireConfirmationBeforeJoining"]:
+        isConfirmed = pag.confirm(
+            text=f'Do you want to join {className} class?',
+            title=f'Confirm joining of {className} class',
+            buttons=['OK', 'Cancel']
+        )
+
+    if isConfirmed == "OK":
+        status = launchClass(code_to_use, password_to_use)
+        logging(f"{className} - {status['message']}")
+
+
+def startLeaving(cls, code_to_use, password_to_use):
+    SETUP, CLASS_INFO = loadFiles()
+    CURR_TIME = datetime.now().strftime("%H:%M")
+    CURR_DAY_NUM = datetime.today().weekday()
+    isConfirmed = "OK"
+
+    if SETUP["requireConfirmationBeforeLeaving"]:
+        isConfirmed = pag.confirm(
+            text=f'Are you sure you want to leave the {cls[0]} class?',
+            title=f'Confirm leaving class?',
+            buttons=['OK', 'Cancel']
+        )
+
+    if isConfirmed == "OK":
+        isMeetingRunning = bringWindowToFocus("Zoom Meeting")
+        if isMeetingRunning:
+            response = findAndClick(["leaveBtn.png"], "Attempting to leave meeting",
+                                    "Unable to find leave button", timeout=90)
+            if not response["error"]:
+                coords = response["coords"]
+                # confirm button
+                pag.click(coords["x"], coords["y"] - 50)
+                logging(f"Successfully left {cls[0]}")
+
+        else:
+            logging(f"{cls[0]} was not running")
+
+
 # if this file is ran directly
 if __name__ == '__main__':
     clear()
@@ -104,6 +149,6 @@ if __name__ == '__main__':
         chosenClass = list(CLASS_INFO.items())[int(className) - 1][1]
         print(list(CLASS_INFO.items())[int(className) - 1][1])
 
-        main(chosenClass["code"], chosenClass["password"])
+        launchClass(chosenClass["code"], chosenClass["password"])
     except Exception as e:
         print(f"Line 138: {e}")
