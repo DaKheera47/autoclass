@@ -28,7 +28,11 @@ def genTable():
     def genClassList():
         try:
             nextClassName = getNextClass()
-            nextClassTime = CLASS_INFO[getNextClass()]["time_weekday"]
+            if CURR_DAY_NUM in range(0, 4):
+                nextClassTime = CLASS_INFO[getNextClass()]["time_weekday"]
+            elif CURR_DAY_NUM == 4:
+                nextClassTime = CLASS_INFO[getNextClass()]["time_friday"]
+
             timeTillNextClass = str(datetime.strptime(
                 nextClassTime, "%H:%M") - datetime.strptime(CURR_TIME, "%H:%M"))[:-3]
 

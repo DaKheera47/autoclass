@@ -230,9 +230,12 @@ def bringWindowToFocus(partial_window_name):
 def getNextClass():
     SETUP, CLASS_INFO = loadFiles()
     CURR_TIME = datetime.now().strftime("%H:%M")
+    CURR_DAY_NUM = datetime.today().weekday()
 
     # find next class
     for cls in list(CLASS_INFO.keys()):
-        if CURR_TIME < CLASS_INFO[cls]["time_weekday"]:
-            code = str(CLASS_INFO[cls])
+        if CURR_DAY_NUM == 4 and CURR_TIME < CLASS_INFO[cls]["time_friday"]:
+            return cls
+
+        if CURR_TIME < CLASS_INFO[cls]["time_weekday"] and CURR_DAY_NUM in range(0, 4):
             return cls
