@@ -5,13 +5,14 @@ import tkinter as tk
 from ttkwidgets import Table
 from helpers import loadFiles
 from datetime import datetime
-# import tkinter as tk
 
 
 SETUP, CLASS_INFO = loadFiles()
 data = list(CLASS_INFO.items())
 CURR_TIME = datetime.now().strftime("%H:%M")
 CURR_DAY_NUM = datetime.today().weekday()
+CURR_DATE = datetime.now().strftime("%d-%m-%Y")
+CURR_DAY = datetime.now().strftime("%A")
 
 root = tk.Tk()
 
@@ -20,6 +21,7 @@ root.rowconfigure(0, weight=1)
 
 style = ttk.Style(root)
 style.theme_use('alt')
+supervisorMode = tk.BooleanVar(root, True)
 drag_row = tk.BooleanVar(root, False)
 drag_col = tk.BooleanVar(root, False)
 
@@ -75,12 +77,27 @@ def toggle_drag_row():
     table.config(drag_rows=drag_row.get())
 
 
-frame = tk.Frame(root)
-tk.Checkbutton(frame, text='drag columns', variable=drag_col,
-               command=toggle_drag_col).pack(side='left')
-tk.Checkbutton(frame, text='drag rows', variable=drag_row,
-               command=toggle_drag_row).pack(side='left')
-frame.grid()
-root.geometry('900x300')
+def toggleSupervisorMode():
+    print(supervisorMode.get())
+    supervisorMode.set(not bool(supervisorMode))
+    print(supervisorMode.get())
 
+
+frame = tk.Frame(root)
+# checkboxes
+tk.Checkbutton(frame, text='Drag Columns', variable=drag_col,
+               command=toggle_drag_col).grid(column=0, row=0)
+tk.Checkbutton(frame, text='Drag Rows', variable=drag_row,
+               command=toggle_drag_row).grid(column=1, row=0)
+tk.Checkbutton(frame, text='Supervisor Mode', variable=supervisorMode,
+               command=toggleSupervisorMode).grid(column=1, row=0)
+# labels
+tk.Label(root, text=f"{CURR_TIME}").grid()
+tk.Label(root, text=f"{CURR_DATE} - {CURR_DAY}").grid()
+tk.Label(root, text=f"{supervisorMode.get()}").grid()
+
+frame.grid()
+
+root.title("AutoClass by Shaheer Sarfaraz")
+root.geometry('900x300')
 root.mainloop()
