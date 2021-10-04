@@ -1,28 +1,17 @@
 # from rich import print
 # import os
+from tkinter import ttk
+import tkinter as tk
+from ttkwidgets import Table
 from helpers import loadFiles
+from datetime import datetime
 # import tkinter as tk
 
 
 SETUP, CLASS_INFO = loadFiles()
-# window = tk.Tk()
-
 data = list(CLASS_INFO.items())
-# print(data)
-# total_rows = len(data)
-# total_columns = len(data[0][1].keys())
-# print(total_columns)
-
-# for i in range(total_rows):  # Rows
-#     for j in range(total_columns):  # Columns
-#         b = tk.Label(window, text=data[i][0])
-#         b.grid(row=i, column=j)
-
-# window.geometry("1000x500")
-# window.mainloop()
-from ttkwidgets import Table
-import tkinter as tk
-from tkinter import ttk
+CURR_TIME = datetime.now().strftime("%H:%M")
+CURR_DAY_NUM = datetime.today().weekday()
 
 root = tk.Tk()
 
@@ -31,23 +20,39 @@ root.rowconfigure(0, weight=1)
 
 style = ttk.Style(root)
 style.theme_use('alt')
-sortable = tk.BooleanVar(root, False)
 drag_row = tk.BooleanVar(root, False)
 drag_col = tk.BooleanVar(root, False)
 
-columns = ["Class Title", "Class Code", "Class Password", "Class Joining Time", "Class Leaving Time", "Class Duration"]
-table = Table(root, columns=columns, sortable=sortable.get(), drag_cols=drag_col.get(),
-              drag_rows=drag_row.get(), height=6)
+columns = ["Class Title", "Class Code", "Class Password",
+           "Class Joining Time", "Class Leaving Time", "Class Duration"]
+table = Table(root, columns=columns, sortable=True, drag_cols=drag_col.get(),
+              drag_rows=drag_row.get(), height=10)
 for col in columns:
     table.heading(col, text=col)
-    table.column(col, width=100, stretch=False)
+    table.column(col, width=100, stretch=True)
 
-# for i in range(12):
-#     table.insert('', 'end', iid=i,
-#                  values=(i, i) + tuple(i + 10 * j for j in range(2, 7)))
+for ind, cls in enumerate(data):
+    tableItems = []
+    tableItems.append(cls[0])
 
-for ind, cls in enumerate(CLASS_INFO):
-    table.insert(f"{cls}", ind)
+    for value in cls[1]:
+        if value != "time_friday" and value != "time_of_leaving_friday":
+            # weekdays
+            if CURR_DAY_NUM in range(0, 4):
+                tableItems.append(cls[1][value])
+
+        if value != "time_of_leaving_weekday" and value != "time_weekday":
+            # friday
+            if CURR_DAY_NUM == 4:
+                tableItems.append(cls[1][value])
+
+    duration = str(datetime.strptime(
+        tableItems[3], "%H:%M") - datetime.strptime(tableItems[4], "%H:%M"))[:-3]
+    tableItems.append(duration)
+    # print(cls)
+    # print(tableItems)
+    # print("--------------------------------------------")
+    table.insert("", "end", iid=ind, values=list(tableItems))
 
 
 # add scrollbars
@@ -62,10 +67,6 @@ root.update_idletasks()
 
 
 # toggle table properties
-def toggle_sort():
-    table.config(sortable=sortable.get())
-
-
 def toggle_drag_col():
     table.config(drag_cols=drag_col.get())
 
@@ -75,10 +76,11 @@ def toggle_drag_row():
 
 
 frame = tk.Frame(root)
-tk.Checkbutton(frame, text='sortable', variable=sortable, command=toggle_sort).pack(side='left')
-tk.Checkbutton(frame, text='drag columns', variable=drag_col, command=toggle_drag_col).pack(side='left')
-tk.Checkbutton(frame, text='drag rows', variable=drag_row, command=toggle_drag_row).pack(side='left')
+tk.Checkbutton(frame, text='drag columns', variable=drag_col,
+               command=toggle_drag_col).pack(side='left')
+tk.Checkbutton(frame, text='drag rows', variable=drag_row,
+               command=toggle_drag_row).pack(side='left')
 frame.grid()
-root.geometry('400x200')
+root.geometry('900x300')
 
 root.mainloop()
