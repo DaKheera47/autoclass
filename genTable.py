@@ -20,14 +20,13 @@ cursor.hide()
 def genTable():
     CUR_PATH = os.path.dirname(os.path.realpath(__file__))
     CURR_TIME = datetime.now().strftime("%H:%M")
-    CURR_DATE = datetime.now().strftime("%d-%m-%Y")
-    CURR_DAY = datetime.now().strftime("%A")
+    DATE_STRING = datetime.now().strftime("%H:%M - %D - %A")
     CURR_DAY_NUM = datetime.today().weekday()
     SETUP, CLASS_INFO = loadFiles()
 
     def genClassList():
         try:
-            nextClassName = getNextClass()
+            nextclsName = getNextClass()
             if CURR_DAY_NUM in range(0, 4):
                 nextClassTime = CLASS_INFO[getNextClass()]["time_weekday"]
             elif CURR_DAY_NUM == 4:
@@ -37,51 +36,45 @@ def genTable():
                 nextClassTime, "%H:%M") - datetime.strptime(CURR_TIME, "%H:%M"))[:-3]
 
             tableContent = Text.assemble((
-                f"Last Refreshed: {CURR_TIME} \n {CURR_DATE} - {CURR_DAY} \n Next class: {getNextClass()} in {timeTillNextClass}",
+                f"{DATE_STRING} \n Next class: {getNextClass()} in {timeTillNextClass}",
                 "bold green"))
         except Exception as e:
             tableContent = Text.assemble((
-                f"Last Refreshed: {CURR_TIME} \n {CURR_DATE} - {CURR_DAY} \n", "bold green"))
+                f"{DATE_STRING} \n Done with classes for today :)", "bold green"))
 
         table = Table(title="Class List", caption=tableContent)
-        table.add_column("Title", justify="left", style="cyan", no_wrap=True)
-        table.add_column("Code", justify="left", style="cyan")
+        table.add_column("Title", justify="center", style="cyan", no_wrap=True)
+        table.add_column("Code", justify="center", style="cyan")
+        table.add_column("Password", justify="center", style="cyan")
         table.add_column("Join Time", justify="center", style="green")
         table.add_column("Leave Time", justify="center", style="green")
-        table.add_column("Class Duration", justify="center", style="cyan")
+        table.add_column("Duration", justify="center", style="cyan")
 
-        for cls in list(CLASS_INFO.keys()):
-            code = str(CLASS_INFO[cls]["code"]).replace(" ", "")
+        for clsName in list(CLASS_INFO.keys()):
+            code = str(CLASS_INFO[clsName]["code"]).replace(" ", "")
+            password = str(CLASS_INFO[clsName]["password"]).replace(" ", "")
 
-            if CURR_DAY_NUM == 4:
-                # friday timings
-                timeOfJoining = str(CLASS_INFO[cls]["time_friday"])
-                timeOfLeaving = str(CLASS_INFO[cls]["time_of_leaving_friday"])
-            else:
-                # any other day
-                timeOfJoining = str(CLASS_INFO[cls]["time_weekday"])
-                timeOfLeaving = str(CLASS_INFO[cls]["time_of_leaving_weekday"])
+            timeJoining = datetime.strptime(
+                CLASS_INFO[clsName]["time_friday" if CURR_DAY_NUM == 4 else "time_weekday"],
+                "%H:%M"
+            )
+            timeLeaving = datetime.strptime(
+                CLASS_INFO[clsName]["time_of_leaving_friday" if CURR_DAY_NUM == 4 else "time_of_leaving_weekday"],
+                "%H:%M"
+            )
 
             # https://stackoverflow.com/questions/3096953/how-to-calculate-the-time-interval-between-two-time-strings
-            duration = datetime.strptime(
-                timeOfLeaving, "%H:%M") - datetime.strptime(timeOfJoining, "%H:%M")
+            durationOfClass = timeLeaving - timeJoining
+            coloredTimeJoining = Text.assemble(
+                (f"{timeJoining.strftime('%H:%M')}", "green" if CURR_TIME > str(timeJoining) else "yellow")
+            )
+            coloredTimeLeaving = Text.assemble(
+                (f"{timeLeaving.strftime('%H:%M')}", "green" if CURR_TIME > str(timeLeaving) else "yellow")
+            )
 
-            if CURR_TIME > timeOfJoining:
-                # if time has passed then yellow
-                timeOfJoining = Text.assemble((f"{timeOfJoining}", "yellow"))
-            else:
-                # if time if yet to come then green
-                timeOfJoining = Text.assemble((f"{timeOfJoining}", "green"))
-
-            if CURR_TIME > timeOfLeaving:
-                # if time has passed then yellow
-                timeOfLeaving = Text.assemble((f"{timeOfLeaving}", "yellow"))
-            else:
-                # if time if yet to come then green
-                timeOfLeaving = Text.assemble((f"{timeOfLeaving}", "green"))
-
-            table.add_row(cls, code, timeOfJoining,
-                          timeOfLeaving, str(duration)[:-3])
+            table.add_row(clsName, code, password, coloredTimeJoining,
+                          coloredTimeLeaving, str(durationOfClass)[:-3]
+            )
 
         return table
 

@@ -10,6 +10,10 @@ from functools import partial
 import cursor
 cursor.hide()
 
+pag.LOG_SCREENSHOTS = True  # If True, save screenshots for clicks and key presses.
+
+# If not None, PyAutoGUI deletes old screenshots when this limit has been reached:
+pag.LOG_SCREENSHOTS_LIMIT = 50
 
 def checkForClassTime():
     SETUP, CLASS_INFO = loadFiles()
