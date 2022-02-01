@@ -16,7 +16,7 @@ pag.LOG_SCREENSHOTS = True  # If True, save screenshots for clicks and key press
 pag.LOG_SCREENSHOTS_LIMIT = 50
 
 def checkForClassTime():
-    SETUP, CLASS_INFO = loadFiles()
+    SETUP, CLASS_INFO, _ = loadFiles()
     CURR_TIME = datetime.now().strftime("%H:%M")
     CURR_DAY_NUM = datetime.today().weekday()
     EVENT_LOOP = []

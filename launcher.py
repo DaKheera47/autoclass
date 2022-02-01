@@ -32,7 +32,7 @@ MSGS = {
 
 
 def launchClass(code, password):
-    SETUP, CLASS_INFO = loadFiles()
+    SETUP, CLASS_INFO, _ = loadFiles()
     pag.PAUSE = SETUP["delayBetweenActions"]
 
     # start button
@@ -83,7 +83,7 @@ def launchClass(code, password):
 
 def startLaunching(className, code_to_use, password_to_use):
     # if confirmation is required
-    SETUP, CLASS_INFO = loadFiles()
+    SETUP, CLASS_INFO, _ = loadFiles()
     isConfirmed = "OK"
     if SETUP["requireConfirmationBeforeJoining"]:
         isConfirmed = pag.confirm(
@@ -98,7 +98,7 @@ def startLaunching(className, code_to_use, password_to_use):
 
 
 def startLeaving(cls, code_to_use, password_to_use):
-    SETUP, CLASS_INFO = loadFiles()
+    SETUP, CLASS_INFO, _ = loadFiles()
     CURR_TIME = datetime.now().strftime("%H:%M")
     CURR_DAY_NUM = datetime.today().weekday()
     isConfirmed = "OK"
@@ -127,7 +127,7 @@ def startLeaving(cls, code_to_use, password_to_use):
 
 # if this file is ran directly
 if __name__ == '__main__':
-    SETUP, CLASS_INFO = loadFiles()
+    SETUP, CLASS_INFO, _ = loadFiles()
 
     genTable(CLASS_INFO, footer=False)
     cls = input(f"Choose your code here ==>")

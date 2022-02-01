@@ -52,6 +52,21 @@ def loadFiles():
         yaml.dump(SAMPLE_CONFIG, file)
         file.close()
 
+    # https://rich.readthedocs.io/en/stable/appendix/colors.html
+    if not os.path.exists(f"{CUR_PATH}/config/styles.yaml"):
+        file = open(f"{CUR_PATH}/config/styles.yaml", "w")
+        SAMPLE_CONFIG = {
+            "text-color": "white",
+            "future": "cyan",
+            "past": "bright_black",
+            "enabled": "green",
+            "disabled": "red",
+            "highlight": "cyan",
+        }
+
+        yaml.dump(SAMPLE_CONFIG, file)
+        file.close()
+
     # importing external files
     with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
         try:
@@ -62,6 +77,12 @@ def loadFiles():
     with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
         try:
             CLASS_INFO = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    with open(f"{CUR_PATH}/config/styles.yaml", 'r') as stream:
+        try:
+            COLORS = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
 
@@ -76,7 +97,7 @@ def loadFiles():
         CLASS_INFO = OrderedDict(
             sorted(CLASS_INFO.items(), key=lambda x: x[1]["time_weekday"]))
 
-    return SETUP, CLASS_INFO
+    return SETUP, CLASS_INFO, COLORS
 
 
 def clear():
@@ -235,7 +256,7 @@ def bringWindowToFocus(partial_window_name):
 
 
 def getNextClass():
-    SETUP, CLASS_INFO = loadFiles()
+    SETUP, CLASS_INFO, _ = loadFiles()
     CURR_TIME = datetime.now().strftime("%H:%M")
     CURR_DAY_NUM = datetime.today().weekday()
 

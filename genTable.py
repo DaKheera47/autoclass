@@ -17,15 +17,16 @@ import cursor
 cursor.hide()
 
 leftMdx = """#  Instructions
--   Change the default class by opening and changing the `classes.yaml` in the `config` folder
+-   Change the default class by opening and changing the classes.yaml in the config folder
 -   Update the configuration by referring to the readme on the GitHub Page"""
+
 
 def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True):
     CUR_PATH = os.path.dirname(os.path.realpath(__file__))
     CURR_TIME = datetime.now().strftime("%H:%M")
     DATE_STRING = datetime.now().strftime("%H:%M - %D - %A")
     CURR_DAY_NUM = datetime.today().weekday()
-    SETUP, _ = loadFiles()
+    SETUP, _, COLORS = loadFiles()
 
     def genClassList():
         try:
@@ -39,65 +40,73 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True):
                 nextClassTime, "%H:%M") - datetime.strptime(CURR_TIME, "%H:%M"))[:-3]
 
             tableContent = Text.assemble((
-                f"{DATE_STRING} \n Next class: {getNextClass()} in {timeTillNextClass}",
-                "bold green"))
+                f"{DATE_STRING} \n Joining {getNextClass()} in {timeTillNextClass}",
+                COLORS["highlight"]))
         except Exception as e:
             tableContent = Text.assemble((
-                f"{DATE_STRING} \n Done with classes for today :)", "bold green"))
+                f"{DATE_STRING} \n Done with classes for today :)", COLORS["highlight"]))
 
-        table = Table(title="Class List", caption=tableContent)
-        table.add_column("#", justify="center", style="cyan", no_wrap=True)
-        table.add_column("Title", justify="center", style="cyan", no_wrap=True)
-        table.add_column("Code", justify="center", style="cyan")
-        table.add_column("Password", justify="center", style="cyan")
-        table.add_column("Join Time", justify="center", style="green")
-        table.add_column("Leave Time", justify="center", style="green")
-        table.add_column("Duration", justify="center", style="cyan")
+        table = Table(title="Class List", caption=tableContent,
+                      style=COLORS["text-color"])
+        table.add_column("#", justify="center",
+                         style=COLORS["text-color"], no_wrap=True)
+        table.add_column("Title", justify="center",
+                         style=COLORS["text-color"], no_wrap=True)
+        table.add_column("Code", justify="center",
+                         style=COLORS["text-color"])
+        table.add_column("Password", justify="center",
+                         style=COLORS["text-color"])
+        table.add_column("Join Time", justify="center",
+                         style=COLORS["text-color"])
+        table.add_column("Leave Time", justify="center",
+                         style=COLORS["text-color"])
+        table.add_column("Duration", justify="center",
+                         style=COLORS["text-color"])
 
         for index, clsName in enumerate(list(CLASS_INFO.keys()), start=1):
             code = str(CLASS_INFO[clsName]["code"]).replace(" ", "")
             password = str(CLASS_INFO[clsName]["password"]).replace(" ", "")
 
             timeJoining = datetime.strptime(
-                CLASS_INFO[clsName]["time_friday" if CURR_DAY_NUM == 4 else "time_weekday"],
-                "%H:%M"
-            )
+                CLASS_INFO[clsName]["time_friday" if CURR_DAY_NUM == 4 else "time_weekday"], "%H:%M")
             timeLeaving = datetime.strptime(
-                CLASS_INFO[clsName]["time_of_leaving_friday" if CURR_DAY_NUM == 4 else "time_of_leaving_weekday"],
-                "%H:%M"
-            )
+                CLASS_INFO[clsName]["time_of_leaving_friday" if CURR_DAY_NUM == 4 else "time_of_leaving_weekday"], "%H:%M")
 
             # https://stackoverflow.com/questions/3096953/how-to-calculate-the-time-interval-between-two-time-strings
             durationOfClass = timeLeaving - timeJoining
+
+            timeJoining = timeJoining.strftime('%H:%M')
+            timeLeaving = timeLeaving.strftime('%H:%M')
+
+            color = COLORS["past"] if CURR_TIME > str(
+                timeJoining) else COLORS["future"]
             coloredTimeJoining = Text.assemble(
-                (f"{timeJoining.strftime('%H:%M')}",
-                 "green" if CURR_TIME > str(timeJoining) else "yellow")
+                (f"{timeJoining}", color)
             )
-            coloredTimeLeaving = Text.assemble(
-                (f"{timeLeaving.strftime('%H:%M')}",
-                 "green" if CURR_TIME > str(timeLeaving) else "yellow")
-            )
+            color = COLORS["future"] if CURR_TIME < str(
+                timeLeaving) else COLORS["past"]
+            coloredTimeLeaving = Text.assemble((f"{timeLeaving}", color))
 
             table.add_row(str(index), clsName, code, password, coloredTimeJoining,
-                          coloredTimeLeaving, str(durationOfClass)[:-3]
-                          )
+                          coloredTimeLeaving, str(durationOfClass)[:-3])
 
         return table
 
     def genConfig():
         if SETUP["requireConfirmationBeforeJoining"]:
-            joinConfirmation = Text.assemble(("Enabled", "black on green"))
+            joinConfirmation = Text.assemble(("Enabled", COLORS["enabled"]))
         else:
-            joinConfirmation = Text.assemble(("Disabled", "black on red"))
+            joinConfirmation = Text.assemble(("Disabled", COLORS["disabled"]))
         if SETUP["requireConfirmationBeforeLeaving"]:
-            leaveConfirmation = Text.assemble(("Enabled", "black on green"))
+            leaveConfirmation = Text.assemble(("Enabled", COLORS["enabled"]))
         else:
-            leaveConfirmation = Text.assemble(("Disabled", "black on red"))
+            leaveConfirmation = Text.assemble(("Disabled", COLORS["disabled"]))
 
         table = Table()
         table.add_column("Description", justify="left",
-                         style="cyan", no_wrap=True)
-        table.add_column("Setting", justify="left")
+                         style=COLORS["text-color"], no_wrap=True)
+        table.add_column("Setting", justify="center",
+                         style=COLORS["text-color"])
 
         table.add_row(
             "Delay between every action taken", f"{SETUP['delayBetweenActions']}s")
@@ -113,7 +122,7 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True):
     # generating components to render
     classListTable = genClassList()
     madeByShaheer = Text.assemble(
-        "Made By Shaheer ", ("Sarfaraz", "bold green"))
+        "Made By Shaheer ", ("Sarfaraz", COLORS["highlight"]))
 
     # creating UI layout
     layout = Layout()
@@ -129,10 +138,10 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True):
             Layout(name="middle", ratio=2),
         )
     bottomRightComponents = Group(
-        Text.assemble("Made By Shaheer ", ("Sarfaraz", "bold green")),
+        Text.assemble("Made By Shaheer ", ("Sarfaraz", COLORS["highlight"])),
     )
     bottomLeftComponents = Group(
-        Text.assemble(("AutoClass", "bold green")),
+        Text.assemble(("AutoClass", COLORS["highlight"])),
     )
     layout["middle"].split_row(
         Layout(name="left"),
@@ -150,15 +159,18 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True):
         Align(classListTable, align="center", vertical="middle")
     )
     layout["middle"]["left"].update(
-        Markdown(leftMdx)
+        Padding(
+            Group(
+                Markdown(leftMdx)
+            ), style=COLORS["text-color"]
+        )
     )
-
     layout["middle"]["right"].update(
         Padding(
             Group(
                 Markdown("# Current Configuration"),
                 genConfig()
-            ), (0, 0, 0, 1))
+            ), (0, 0, 0, 1), style=COLORS["text-color"])
     )
     if footer:
         layout["bottom"]["left"].update(
