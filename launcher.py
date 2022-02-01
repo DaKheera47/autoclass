@@ -5,7 +5,8 @@ import yaml
 import sys
 import json
 from datetime import datetime
-from helpers import findAndClick, findAndInputText, loadFiles, clear, bringWindowToFocus, logging
+from helpers import findAndClick, findAndInputText, loadFiles, clear, bringWindowToFocus, log
+from genTable import genTable
 import cursor
 cursor.hide()
 
@@ -93,7 +94,7 @@ def startLaunching(className, code_to_use, password_to_use):
 
     if isConfirmed == "OK":
         status = launchClass(code_to_use, password_to_use)
-        logging(f"{className} - {status['message']}")
+        log(f"Joined {className}")
 
 
 def startLeaving(cls, code_to_use, password_to_use):
@@ -118,37 +119,32 @@ def startLeaving(cls, code_to_use, password_to_use):
                 coords = response["coords"]
                 # confirm button
                 pag.click(coords["x"], coords["y"] - 50)
-                logging(f"Successfully left {cls[0]}")
+                log(f"Left {cls[0]}")
 
         else:
-            logging(f"{cls[0]} was not running")
+            log(f"{cls[0]} was not running")
 
 
 # if this file is ran directly
 if __name__ == '__main__':
-    clear()
-    with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
-        try:
-            CLASS_INFO = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
+    SETUP, CLASS_INFO = loadFiles()
 
-    print("""
-┌─┐┬ ┬┌─┐┌─┐┌─┐┌─┐  ┌─┐┬  ┌─┐┌─┐┌─┐
-│  ├─┤│ ││ │└─┐├┤   │  │  ├─┤└─┐└─┐
-└─┘┴ ┴└─┘└─┘└─┘└─┘  └─┘┴─┘┴ ┴└─┘└─┘""")
+    genTable(CLASS_INFO, footer=False)
+    cls = input(f"Choose your code here ==>")
+    className = list(CLASS_INFO.keys())[int(cls) - 1]
+    print(list(CLASS_INFO.keys())[int(cls) - 1])
 
-    i = 1
-    for cls in CLASS_INFO.items():
-        print(f"[{i}] {cls[0]}: {cls[1]['code']}")
-        i += 1
+    classToLaunch = CLASS_INFO[list(CLASS_INFO.keys())[int(cls) - 1]]
 
-    className = input(f"=>>")
+    leftMdx = """# Instructions
+-   Choose your class from the options given in this table
+-   The class with the code will be opened
+-   The meeting ID and password will be entered automatically
+"""
+    genTable({ className: classToLaunch }, leftMdx=leftMdx, footer=False)
 
     try:
-        chosenClass = list(CLASS_INFO.items())[int(className) - 1][1]
-        print(list(CLASS_INFO.items())[int(className) - 1][1])
-
+        chosenClass = list(CLASS_INFO.items())[int(cls) - 1][1]
         launchClass(chosenClass["code"], chosenClass["password"])
     except Exception as e:
-        print(f"Line 138: {e}")
+        print(f"{e}")

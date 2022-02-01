@@ -11,18 +11,21 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.padding import Padding
 from datetime import datetime
-from helpers import loadFiles, getNextClass
+from helpers import loadFiles, getNextClass, clear
 import os
 import cursor
 cursor.hide()
 
+leftMdx = """#  Instructions
+-   Change the default class by opening and changing the `classes.yaml` in the `config` folder
+-   Update the configuration by referring to the readme on the GitHub Page"""
 
-def genTable():
+def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True):
     CUR_PATH = os.path.dirname(os.path.realpath(__file__))
     CURR_TIME = datetime.now().strftime("%H:%M")
     DATE_STRING = datetime.now().strftime("%H:%M - %D - %A")
     CURR_DAY_NUM = datetime.today().weekday()
-    SETUP, CLASS_INFO = loadFiles()
+    SETUP, _ = loadFiles()
 
     def genClassList():
         try:
@@ -43,6 +46,7 @@ def genTable():
                 f"{DATE_STRING} \n Done with classes for today :)", "bold green"))
 
         table = Table(title="Class List", caption=tableContent)
+        table.add_column("#", justify="center", style="cyan", no_wrap=True)
         table.add_column("Title", justify="center", style="cyan", no_wrap=True)
         table.add_column("Code", justify="center", style="cyan")
         table.add_column("Password", justify="center", style="cyan")
@@ -50,7 +54,7 @@ def genTable():
         table.add_column("Leave Time", justify="center", style="green")
         table.add_column("Duration", justify="center", style="cyan")
 
-        for clsName in list(CLASS_INFO.keys()):
+        for index, clsName in enumerate(list(CLASS_INFO.keys()), start=1):
             code = str(CLASS_INFO[clsName]["code"]).replace(" ", "")
             password = str(CLASS_INFO[clsName]["password"]).replace(" ", "")
 
@@ -66,15 +70,17 @@ def genTable():
             # https://stackoverflow.com/questions/3096953/how-to-calculate-the-time-interval-between-two-time-strings
             durationOfClass = timeLeaving - timeJoining
             coloredTimeJoining = Text.assemble(
-                (f"{timeJoining.strftime('%H:%M')}", "green" if CURR_TIME > str(timeJoining) else "yellow")
+                (f"{timeJoining.strftime('%H:%M')}",
+                 "green" if CURR_TIME > str(timeJoining) else "yellow")
             )
             coloredTimeLeaving = Text.assemble(
-                (f"{timeLeaving.strftime('%H:%M')}", "green" if CURR_TIME > str(timeLeaving) else "yellow")
+                (f"{timeLeaving.strftime('%H:%M')}",
+                 "green" if CURR_TIME > str(timeLeaving) else "yellow")
             )
 
-            table.add_row(clsName, code, password, coloredTimeJoining,
+            table.add_row(str(index), clsName, code, password, coloredTimeJoining,
                           coloredTimeLeaving, str(durationOfClass)[:-3]
-            )
+                          )
 
         return table
 
@@ -108,19 +114,20 @@ def genTable():
     classListTable = genClassList()
     madeByShaheer = Text.assemble(
         "Made By Shaheer ", ("Sarfaraz", "bold green"))
-    instructionsMarkdown = """
-#  Instructions
--   Change the default class by opening and changing the `classes.yaml` in the `config` folder
--   Update the configuration by referring to the readme on the GitHub Page
-"""
 
     # creating UI layout
     layout = Layout()
-    layout.split_column(
-        Layout(name="top", ratio=2),
-        Layout(name="middle", ratio=2),
-        Layout(name="bottom"),
-    )
+    if footer:
+        layout.split_column(
+            Layout(name="top", ratio=2),
+            Layout(name="middle", ratio=2),
+            Layout(name="bottom"),
+        )
+    else:
+        layout.split_column(
+            Layout(name="top", ratio=2),
+            Layout(name="middle", ratio=2),
+        )
     bottomRightComponents = Group(
         Text.assemble("Made By Shaheer ", ("Sarfaraz", "bold green")),
     )
@@ -131,17 +138,19 @@ def genTable():
         Layout(name="left"),
         Layout(name="right"),
     )
-    layout["bottom"].split_row(
-        Layout(name="left"),
-        Layout(name="right"),
-    )
+
+    if footer:
+        layout["bottom"].split_row(
+            Layout(name="left"),
+            Layout(name="right"),
+        )
 
     # rendering components
     layout["top"].update(
         Align(classListTable, align="center", vertical="middle")
     )
     layout["middle"]["left"].update(
-        Markdown(instructionsMarkdown)
+        Markdown(leftMdx)
     )
 
     layout["middle"]["right"].update(
@@ -151,11 +160,13 @@ def genTable():
                 genConfig()
             ), (0, 0, 0, 1))
     )
-    layout["bottom"]["left"].update(
-        Align(bottomLeftComponents, align="left", vertical="bottom")
-    )
-    layout["bottom"]["right"].update(
-        Align(bottomRightComponents, align="right", vertical="bottom")
-    )
+    if footer:
+        layout["bottom"]["left"].update(
+            Align(bottomLeftComponents, align="left", vertical="bottom")
+        )
+        layout["bottom"]["right"].update(
+            Align(bottomRightComponents, align="right", vertical="bottom")
+        )
 
+    clear()
     print(layout)

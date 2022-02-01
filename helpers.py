@@ -177,17 +177,24 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
                 return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
 
-def logging(message: str):
-    if not os.path.exists(os.path.dirname(f"{CUR_PATH}/out/log.json")):
+def log(message: str):
+    now = datetime.now()
+    fileName = "%s_%s_%s.json" % (
+        now.year,
+        str(now.month).rjust(2, "0"),
+        str(now.day).rjust(2, "0"),
+    )
+
+    if not os.path.exists(os.path.dirname(f"{CUR_PATH}/out/{fileName}")):
         try:
-            os.makedirs(os.path.dirname(f"{CUR_PATH}/out/log.json"))
+            os.makedirs(os.path.dirname(f"{CUR_PATH}/out/{fileName}"))
         except OSError as exc:  # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
 
     # making new classes file if it doesnt already exist
-    if not os.path.exists(f"{CUR_PATH}/out/log.json"):
-        file = open(f"{CUR_PATH}/out/log.json", "w")
+    if not os.path.exists(f"{CUR_PATH}/out/{fileName}"):
+        file = open(f"{CUR_PATH}/out/{fileName}", "w")
         placeholder = []
         json.dump(placeholder, file)
         file.close()
@@ -201,7 +208,7 @@ def logging(message: str):
         "message": message,
     }
 
-    with open(f"{CUR_PATH}/out/log.json", "r+") as f:
+    with open(f"{CUR_PATH}/out/{fileName}", "r+") as f:
         output = []
         fileData = json.loads(f.read())
         for entry in fileData:

@@ -1,7 +1,7 @@
 import pyautogui as pag
 import time
 from launcher import launchClass, startLaunching, startLeaving
-from helpers import clear, logging, loadFiles, findAndClick
+from helpers import clear, log, loadFiles, findAndClick
 from genTable import genTable
 import schedule
 from datetime import datetime
@@ -21,8 +21,7 @@ def checkForClassTime():
     CURR_DAY_NUM = datetime.today().weekday()
     EVENT_LOOP = []
 
-    clear()
-    genTable()
+    genTable(CLASS_INFO)
 
     for cls in CLASS_INFO.items():
         # getting class code
