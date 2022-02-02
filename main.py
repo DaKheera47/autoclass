@@ -24,6 +24,7 @@ def checkForClassTime():
     genTable(CLASS_INFO)
 
     for cls in CLASS_INFO.items():
+        print(cls[0])
         # getting class code
         code_to_use = str(CLASS_INFO[cls[0]]["code"])
         password_to_use = str(CLASS_INFO[cls[0]]["password"])

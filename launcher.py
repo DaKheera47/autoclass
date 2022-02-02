@@ -35,9 +35,26 @@ MSGS = {
 }
 
 
-def launchClass(code, password):
+def launchClass(className):
     SETUP, CLASS_INFO, _ = loadFiles()
     pag.PAUSE = SETUP["delayBetweenActions"]
+    leftMdx = f"""# Now Launching {className}
+-   Steps involved:
+    -   Open Zoom
+    -   Click on Join Now button
+    -   Enter Meeting ID
+    -   Enter Meeting password
+    -   Join with Computer Audio
+"""
+
+    for i, cls in enumerate(list(CLASS_INFO.keys())):
+        if cls == className:
+            classDetails = list(CLASS_INFO.items())[i][1]
+
+            # generating custom table
+            genTable({className: classDetails}, leftMdx=leftMdx, footer=False, tagline=f"Now Launching {className}")
+            code = classDetails["code"]
+            password = classDetails["password"]
 
     # start button
     pag.press("winleft")
@@ -46,9 +63,9 @@ def launchClass(code, password):
     pag.write("zoom")
     pag.press("enter")
 
-    endedConfirmation = findAndClick("meetingHasEndedConfirmation.PNG",
+    findAndClick(["meetingHasEndedConfirmation.png"],
                            MSGS["endedConfirmation"]["searching"],
-                           MSGS["endedConfirmation"]["error"], timeout=30 ,confidence=0.8)
+                           MSGS["endedConfirmation"]["error"], timeout=30, confidence=0.8)
 
     joinBtn = findAndClick(["joinUnsigned.PNG", "joinBtn.png"],
                            MSGS["join"]["searching"],
@@ -101,8 +118,9 @@ def startLaunching(className, code_to_use, password_to_use):
         )
 
     if isConfirmed == "OK":
-        status = launchClass(code_to_use, password_to_use)
-        log(f"Joined {className}" if not status['error'] else status['message'])
+        status = launchClass(className)
+        log(f"Joined {className}" if not status['error']
+            else status['message'])
 
 
 def startLeaving(cls, code_to_use, password_to_use):
@@ -140,19 +158,4 @@ if __name__ == '__main__':
     genTable(CLASS_INFO, footer=False)
     cls = input(f"Choose your code here ==>")
     className = list(CLASS_INFO.keys())[int(cls) - 1]
-    print(list(CLASS_INFO.keys())[int(cls) - 1])
-
-    classToLaunch = CLASS_INFO[list(CLASS_INFO.keys())[int(cls) - 1]]
-
-    leftMdx = """# Instructions
--   Choose your class from the options given in this table
--   The class with the code will be opened
--   The meeting ID and password will be entered automatically
-"""
-    genTable({className: classToLaunch}, leftMdx=leftMdx, footer=False)
-
-    try:
-        chosenClass = list(CLASS_INFO.items())[int(cls) - 1][1]
-        launchClass(chosenClass["code"], chosenClass["password"])
-    except Exception as e:
-        print(f"{e}")
+    launchClass(className)

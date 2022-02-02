@@ -21,7 +21,7 @@ leftMdx = """#  Instructions
 -   Update the configuration by referring to the readme on the GitHub Page"""
 
 
-def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True):
+def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
     CUR_PATH = os.path.dirname(os.path.realpath(__file__))
     CURR_TIME = datetime.now().strftime("%H:%M")
     DATE_STRING = datetime.now().strftime("%H:%M - %D - %A")
@@ -29,22 +29,26 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True):
     SETUP, _, COLORS = loadFiles()
 
     def genClassList():
-        try:
-            nextclsName = getNextClass()
-            if CURR_DAY_NUM in range(0, 4):
-                nextClassTime = CLASS_INFO[getNextClass()]["time_weekday"]
-            elif CURR_DAY_NUM == 4:
-                nextClassTime = CLASS_INFO[getNextClass()]["time_friday"]
-
-            timeTillNextClass = str(datetime.strptime(
-                nextClassTime, "%H:%M") - datetime.strptime(CURR_TIME, "%H:%M"))[:-3]
-
+        if tagline != "":
             tableContent = Text.assemble((
-                f"{DATE_STRING} \n Joining {getNextClass()} in {timeTillNextClass}",
-                COLORS["highlight"]))
-        except Exception as e:
-            tableContent = Text.assemble((
-                f"{DATE_STRING} \n Done with classes for today :)", COLORS["highlight"]))
+                f"{DATE_STRING} \n {tagline}", COLORS["highlight"]))
+        else:
+            try:
+                nextclsName = getNextClass()
+                if CURR_DAY_NUM in range(0, 4):
+                    nextClassTime = CLASS_INFO[getNextClass()]["time_weekday"]
+                elif CURR_DAY_NUM == 4:
+                    nextClassTime = CLASS_INFO[getNextClass()]["time_friday"]
+
+                timeTillNextClass = str(datetime.strptime(
+                    nextClassTime, "%H:%M") - datetime.strptime(CURR_TIME, "%H:%M"))[:-3]
+
+                tableContent = Text.assemble((
+                    f"{DATE_STRING} \n Joining {getNextClass()} in {timeTillNextClass}",
+                    COLORS["highlight"]))
+            except Exception as e:
+                tableContent = Text.assemble((
+                    f"{DATE_STRING} \n Done with classes for today :)", COLORS["highlight"]))
 
         table = Table(title="Class List", caption=tableContent,
                       style=COLORS["text-color"])

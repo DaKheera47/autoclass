@@ -183,7 +183,7 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
                     t2 = time.time() - t1
                     if x != -1 and y != -1:
                         pag.click(x, y + 60)
-                        pag.write(textToInput.replace(" ", ""))
+                        pag.write(str(textToInput).replace(" ", ""))
                         pag.press("enter")
                         progress.stop()
                         return {"error": False, "message": None}
