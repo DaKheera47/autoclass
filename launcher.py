@@ -28,6 +28,10 @@ MSGS = {
         "searching": "Have Not Been Accepted Into Class",
         "error": "Couldn't Find Join With Computer Audio Button or The Host Didn't Allow Entry",
     },
+    "endedConfirmation": {
+        "searching": "Searching if there is a confirmation for has this meeting ended or not",
+        "error": "There's no confirmation required!",
+    },
 }
 
 
@@ -41,6 +45,10 @@ def launchClass(code, password):
     # launch zoom
     pag.write("zoom")
     pag.press("enter")
+
+    endedConfirmation = findAndClick("meetingHasEndedConfirmation.PNG",
+                           MSGS["endedConfirmation"]["searching"],
+                           MSGS["endedConfirmation"]["error"], confidence=0.8)
 
     joinBtn = findAndClick(["joinUnsigned.PNG", "joinBtn.png"],
                            MSGS["join"]["searching"],
@@ -94,7 +102,7 @@ def startLaunching(className, code_to_use, password_to_use):
 
     if isConfirmed == "OK":
         status = launchClass(code_to_use, password_to_use)
-        log(f"Joined {className}")
+        log(f"Joined {className}" if not status['error'] else status['message'])
 
 
 def startLeaving(cls, code_to_use, password_to_use):
@@ -141,7 +149,7 @@ if __name__ == '__main__':
 -   The class with the code will be opened
 -   The meeting ID and password will be entered automatically
 """
-    genTable({ className: classToLaunch }, leftMdx=leftMdx, footer=False)
+    genTable({className: classToLaunch}, leftMdx=leftMdx, footer=False)
 
     try:
         chosenClass = list(CLASS_INFO.items())[int(cls) - 1][1]
