@@ -48,7 +48,7 @@ def launchClass(code, password):
 
     endedConfirmation = findAndClick("meetingHasEndedConfirmation.PNG",
                            MSGS["endedConfirmation"]["searching"],
-                           MSGS["endedConfirmation"]["error"], confidence=0.8)
+                           MSGS["endedConfirmation"]["error"], timeout=30 ,confidence=0.8)
 
     joinBtn = findAndClick(["joinUnsigned.PNG", "joinBtn.png"],
                            MSGS["join"]["searching"],
