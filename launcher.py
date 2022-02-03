@@ -106,7 +106,7 @@ def launchClass(className):
     return {"error": False, "message": "Success"}
 
 
-def startLaunching(className, code_to_use, password_to_use):
+def startLaunching(className):
     # if confirmation is required
     SETUP, CLASS_INFO, _ = loadFiles()
     isConfirmed = "OK"
