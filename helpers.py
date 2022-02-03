@@ -255,15 +255,40 @@ def bringWindowToFocus(partial_window_name):
     return False
 
 
+def differenceNowToTime(time1):
+    # time must be in %H:%M format
+    CURR_TIME = datetime.now().strftime("%H:%M")
+    return str(datetime.strptime(time1, "%H:%M") - datetime.strptime(CURR_TIME, "%H:%M"))[:-3]
+
+
 def getNextClass():
     SETUP, CLASS_INFO, _ = loadFiles()
     CURR_TIME = datetime.now().strftime("%H:%M")
     CURR_DAY_NUM = datetime.today().weekday()
 
-    # find next class
+    # find next class join or leave time
     for cls in list(CLASS_INFO.keys()):
-        if CURR_DAY_NUM == 4 and CURR_TIME < CLASS_INFO[cls]["time_friday"]:
-            return cls
+        CURR_CLASS = CLASS_INFO[cls]
 
-        if CURR_TIME < CLASS_INFO[cls]["time_weekday"] and CURR_DAY_NUM in range(0, 4):
-            return cls
+        if CURR_DAY_NUM == 4:
+
+            if CURR_TIME < CLASS_INFO[cls]["time_friday"]:
+                # time to next class
+                TTNC = differenceNowToTime(CURR_CLASS["time_friday"])
+                return {"class": cls, "event": "Joining", "timeTillNextEvent": TTNC}
+
+            if CURR_TIME < CLASS_INFO[cls]["time_of_leaving_friday"]:
+                TTNC = differenceNowToTime(
+                    CURR_CLASS["time_of_leaving_friday"])
+                return {"class": cls, "event": "Leaving", "timeTillNextEvent": TTNC}
+
+        if CURR_DAY_NUM in range(0, 4):
+
+            if CURR_TIME < CLASS_INFO[cls]["time_weekday"]:
+                TTNC = differenceNowToTime(CURR_CLASS["time_weekday"])
+                return {"class": cls, "event": "Joining", "timeTillNextEvent": TTNC}
+
+            if CURR_TIME < CLASS_INFO[cls]["time_of_leaving_weekday"]:
+                TTNC = differenceNowToTime(
+                    CURR_CLASS["time_of_leaving_weekday"])
+                return {"class": cls, "event": "Leaving", "timeTillNextEvent": TTNC}

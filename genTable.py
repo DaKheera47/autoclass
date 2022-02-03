@@ -34,18 +34,13 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
                 f"{DATE_STRING} \n {tagline}", COLORS["highlight"]))
         else:
             try:
-                nextclsName = getNextClass()
-                if CURR_DAY_NUM in range(0, 4):
-                    nextClassTime = CLASS_INFO[getNextClass()]["time_weekday"]
-                elif CURR_DAY_NUM == 4:
-                    nextClassTime = CLASS_INFO[getNextClass()]["time_friday"]
-
-                timeTillNextClass = str(datetime.strptime(
-                    nextClassTime, "%H:%M") - datetime.strptime(CURR_TIME, "%H:%M"))[:-3]
+                data = getNextClass()
+                nextclsName = data["class"]
+                event = data["event"]
+                timeTillNextEvent = data["timeTillNextEvent"]
 
                 tableContent = Text.assemble((
-                    f"{DATE_STRING} \n Joining {getNextClass()} in {timeTillNextClass}",
-                    COLORS["highlight"]))
+                    f"{DATE_STRING} \n {event} {nextclsName} in {timeTillNextEvent}", COLORS["highlight"]))
             except Exception as e:
                 tableContent = Text.assemble((
                     f"{DATE_STRING} \n Done with classes for today :)", COLORS["highlight"]))
