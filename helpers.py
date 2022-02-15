@@ -308,3 +308,12 @@ def getNextClass():
                 TTNC = differenceNowToTime(
                     CURR_CLASS["time_of_leaving_weekday"])
                 return {"class": cls, "event": "Leaving", "timeTillNextEvent": TTNC}
+
+
+def getConfigValue(name: str):
+    SETUP, _, _ = loadFiles()
+
+    for option in SETUP:
+        for key, value in option.items():
+            if value == name:
+                return option["value"]

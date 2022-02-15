@@ -5,7 +5,7 @@ import yaml
 import sys
 import json
 from datetime import datetime
-from helpers import findAndClick, findAndInputText, loadFiles, clear, bringWindowToFocus, log
+from helpers import findAndClick, findAndInputText, loadFiles, clear, bringWindowToFocus, log, getConfigValue
 from genTable import genTable
 import cursor
 cursor.hide()
@@ -54,7 +54,7 @@ def toggleRecording(event="start"):
 
 def launchClass(className):
     SETUP, CLASS_INFO, _ = loadFiles()
-    pag.PAUSE = SETUP["delayBetweenActions"]
+    pag.PAUSE = getConfigValue("delayBetweenActions")
     leftMdx = f"""# Now Launching {className}
 -   Steps involved:
     -   Open Zoom
@@ -74,7 +74,7 @@ def launchClass(className):
             code = classDetails["code"]
             password = classDetails["password"]
 
-    if SETUP["record"]:
+    if getConfigValue("record"):
         # start recording
         toggleRecording()
 
@@ -99,7 +99,7 @@ def launchClass(className):
     joinMeeting = findAndInputText(["joinMeeting.PNG"],
                                    MSGS["enterCode"]["searching"],
                                    MSGS["enterCode"]["error"], code,
-                                   confidence=SETUP["globalConfidence"])
+                                   confidence=getConfigValue("globalConfidence"))
     if joinMeeting["error"]:
         return joinMeeting
 
@@ -107,7 +107,7 @@ def launchClass(className):
     joinPassword = findAndInputText(["enterMeetingPw.png"],
                                     MSGS["enterPW"]["searching"],
                                     MSGS["enterPW"]["error"], password,
-                                    confidence=SETUP["globalConfidence"])
+                                    confidence=getConfigValue("globalConfidence"))
     if joinPassword["error"]:
         return joinPassword
 
@@ -115,7 +115,7 @@ def launchClass(className):
     joinWithCompAudioBtn = findAndClick(["joinWithComputerAudioBtn.PNG"],
                                         MSGS["compAudio"]["searching"],
                                         MSGS["compAudio"]["error"],
-                                        confidence=SETUP["globalConfidence"])
+                                        confidence=getConfigValue("globalConfidence"))
     if joinWithCompAudioBtn["error"]:
         return joinWithCompAudioBtn
 
@@ -132,7 +132,7 @@ def startLaunching(className):
     # if confirmation is required
     SETUP, CLASS_INFO, _ = loadFiles()
     isConfirmed = "OK"
-    if SETUP["requireConfirmationBeforeJoining"]:
+    if getConfigValue("requireConfirmationBeforeJoining"):
         isConfirmed = pag.confirm(
             text=f'Do you want to join {className} class?',
             title=f'Confirm joining of {className} class',
@@ -154,7 +154,7 @@ def startLeaving(cls, code_to_use, password_to_use):
     # end recording
     toggleRecording(event="end")
 
-    if SETUP["requireConfirmationBeforeLeaving"]:
+    if getConfigValue("requireConfirmationBeforeLeaving"):
         isConfirmed = pag.confirm(
             text=f'Are you sure you want to leave the {cls[0]} class?',
             title=f'Confirm leaving class?',
