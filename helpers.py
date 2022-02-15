@@ -4,6 +4,7 @@ import time
 import pyautogui as pag
 import json
 import yaml
+from rich import print
 from datetime import datetime
 from collections import OrderedDict
 from rich.progress import Progress
@@ -31,8 +32,8 @@ def loadFiles():
                 "code": 'Change code',
                 "password": 'Change Password',
                 "time_friday": "00:00",
-                "time_of_leaving_friday": "00:00",
-                "time_of_leaving_weekday": "00:00",
+                "time_of_leaving_friday": "00:01",
+                "time_of_leaving_weekday": "00:01",
                 "time_weekday": "00:00"
             }
         }
@@ -96,6 +97,20 @@ def loadFiles():
         # any other day
         CLASS_INFO = OrderedDict(
             sorted(CLASS_INFO.items(), key=lambda x: x[1]["time_weekday"]))
+
+    # removing classes with 0 duration, to indicate no class
+    for index, clsName in enumerate(list(CLASS_INFO.keys()), start=1):
+        timeJoining = datetime.strptime(
+            CLASS_INFO[clsName]["time_friday" if CURR_DAY_NUM == 4 else "time_weekday"], "%H:%M")
+        timeLeaving = datetime.strptime(
+            CLASS_INFO[clsName]["time_of_leaving_friday" if CURR_DAY_NUM == 4 else "time_of_leaving_weekday"], "%H:%M")
+
+        # https://stackoverflow.com/questions/3096953/how-to-calculate-the-time-interval-between-two-time-strings
+        durationOfClass = timeLeaving - timeJoining
+        CLASS_INFO[clsName]["duration"] = str(durationOfClass)[:-3]
+
+        if str(durationOfClass) == "0:00:00":
+            del CLASS_INFO[clsName]
 
     return SETUP, CLASS_INFO, COLORS
 

@@ -179,5 +179,5 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
             Align(bottomRightComponents, align="right", vertical="bottom")
         )
 
-    clear()
+    # clear()
     print(layout)
