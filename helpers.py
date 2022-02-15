@@ -43,12 +43,13 @@ def loadFiles():
 
     if not os.path.exists(f"{CUR_PATH}/config/config.yaml"):
         file = open(f"{CUR_PATH}/config/config.yaml", "w")
-        SAMPLE_CONFIG = {
-            "delayBetweenActions": 0.6,
-            "globalConfidence": 0.99,
-            "requireConfirmationBeforeJoining": True,
-            "requireConfirmationBeforeLeaving": True
-        }
+        SAMPLE_CONFIG = [
+            {'description': 'Delay between every action taken', 'value': 0.8},
+            {'description': 'Percentage accuracy to match image', 'value': 0.99},
+            {'description': 'Confirm before joining', 'value': False},
+            {'description': 'Confirm before leaving', 'value': False},
+            {'description': 'Record meetings with OBS Studio', 'value': True}
+        ]
 
         yaml.dump(SAMPLE_CONFIG, file)
         file.close()

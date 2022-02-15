@@ -24,7 +24,7 @@ leftMdx = """#  Instructions
 def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
     CUR_PATH = os.path.dirname(os.path.realpath(__file__))
     CURR_TIME = datetime.now().strftime("%H:%M")
-    DATE_STRING = datetime.now().strftime("%H:%M - %D - %A")
+    DATE_STRING = datetime.now().strftime("%H:%M - %d/%m/%y - %A")
     CURR_DAY_NUM = datetime.today().weekday()
     SETUP, _, COLORS = loadFiles()
 
@@ -92,29 +92,23 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
         return table
 
     def genConfig():
-        if SETUP["requireConfirmationBeforeJoining"]:
-            joinConfirmation = Text.assemble(("Enabled", COLORS["enabled"]))
-        else:
-            joinConfirmation = Text.assemble(("Disabled", COLORS["disabled"]))
-        if SETUP["requireConfirmationBeforeLeaving"]:
-            leaveConfirmation = Text.assemble(("Enabled", COLORS["enabled"]))
-        else:
-            leaveConfirmation = Text.assemble(("Disabled", COLORS["disabled"]))
-
         table = Table()
         table.add_column("Description", justify="left",
                          style=COLORS["text-color"], no_wrap=True)
-        table.add_column("Setting", justify="center",
+        table.add_column("Setting", justify="left",
                          style=COLORS["text-color"])
 
-        table.add_row(
-            "Delay between every action taken", f"{SETUP['delayBetweenActions']}s")
-        table.add_row(
-            "Percent of image to match", f"{SETUP['globalConfidence'] * 100}%")
-        table.add_row(
-            "Require confirmation before joining a class", joinConfirmation)
-        table.add_row(
-            "Require confirmation before leaving a class", leaveConfirmation)
+        for option in SETUP:
+            value = Text.assemble((str(option["value"]), COLORS["text-color"]))
+
+            if option["value"] == True:
+                value = Text.assemble(
+                    (str(option["value"]), COLORS["enabled"]))
+            elif option["value"] == False:
+                value = Text.assemble(
+                    (str(option["value"]), COLORS["disabled"]))
+
+            table.add_row(option["description"], value)
 
         return table
 
