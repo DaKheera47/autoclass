@@ -35,6 +35,23 @@ MSGS = {
 }
 
 
+def toggleRecording(event="start"):
+    # if it can't get it to open
+    if not bringWindowToFocus("OBS"):
+        if event == "start":
+            pag.press("winleft")
+            pag.write("OBS Studio")
+            pag.press("enter")
+            time.sleep(10)
+        else:
+            # dont launch if OBS isnt running
+            return
+
+    pag.hotkey("winleft", "up")
+    # start recording button
+    pag.click(x=1778, y=908)
+
+
 def launchClass(className):
     SETUP, CLASS_INFO, _ = loadFiles()
     pag.PAUSE = SETUP["delayBetweenActions"]
@@ -52,9 +69,14 @@ def launchClass(className):
             classDetails = list(CLASS_INFO.items())[i][1]
 
             # generating custom table
-            genTable({className: classDetails}, leftMdx=leftMdx, footer=False, tagline=f"Now Launching {className}")
+            genTable({className: classDetails}, leftMdx=leftMdx,
+                     footer=False, tagline=f"Now Launching {className}")
             code = classDetails["code"]
             password = classDetails["password"]
+
+    if SETUP["record"]:
+        # start recording
+        toggleRecording()
 
     # start button
     pag.press("winleft")
@@ -64,8 +86,8 @@ def launchClass(className):
     pag.press("enter")
 
     findAndClick(["meetingHasEndedConfirmation.png"],
-                           MSGS["endedConfirmation"]["searching"],
-                           MSGS["endedConfirmation"]["error"], timeout=30, confidence=0.8)
+                 MSGS["endedConfirmation"]["searching"],
+                 MSGS["endedConfirmation"]["error"], timeout=15, confidence=0.8)
 
     joinBtn = findAndClick(["joinUnsigned.PNG", "joinBtn.png"],
                            MSGS["join"]["searching"],
@@ -128,6 +150,9 @@ def startLeaving(cls, code_to_use, password_to_use):
     CURR_TIME = datetime.now().strftime("%H:%M")
     CURR_DAY_NUM = datetime.today().weekday()
     isConfirmed = "OK"
+
+    # end recording
+    toggleRecording(event="end")
 
     if SETUP["requireConfirmationBeforeLeaving"]:
         isConfirmed = pag.confirm(
