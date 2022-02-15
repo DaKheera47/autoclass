@@ -1,7 +1,7 @@
 import pyautogui as pag
 import time
 from launcher import launchClass, startLaunching, startLeaving
-from helpers import clear, log, loadFiles, findAndClick
+from helpers import loadFiles
 from genTable import genTable
 import schedule
 from datetime import datetime
