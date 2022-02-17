@@ -142,8 +142,7 @@ def startLaunching(className):
 
     if isConfirmed == "OK":
         status = launchClass(className)
-        log(f"Joined {className}" if not status['error']
-            else status['message'])
+        log(status["message"], status["error"])
 
 
 def startLeaving(cls, code_to_use, password_to_use):
@@ -171,10 +170,10 @@ def startLeaving(cls, code_to_use, password_to_use):
                 coords = response["coords"]
                 # confirm button
                 pag.click(coords["x"], coords["y"] - 50)
-                log(f"Left {cls[0]}")
+                log("Left Currently Running Meeting", True)
 
         else:
-            log(f"{cls[0]} was not running")
+            log("No Running Meeting", False)
 
 
 # if this file is ran directly

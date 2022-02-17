@@ -220,7 +220,7 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
                 return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
 
-def log(message: str):
+def log(message: str, success: bool):
     now = datetime.now()
     fileName = "%s_%s_%s.json" % (
         now.year,
@@ -249,6 +249,7 @@ def log(message: str):
         "time": CURR_TIME,
         "date": CURR_DATE,
         "message": message,
+        "success": success,
     }
 
     with open(f"{CUR_PATH}/out/{fileName}", "r+") as f:
