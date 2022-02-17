@@ -115,6 +115,7 @@ def launchClass(className):
     joinWithCompAudioBtn = findAndClick(["joinWithComputerAudioBtn.PNG"],
                                         MSGS["compAudio"]["searching"],
                                         MSGS["compAudio"]["error"],
+                                        timeout=60 * 20,
                                         confidence=getConfigValue("globalConfidence"))
     if joinWithCompAudioBtn["error"]:
         return joinWithCompAudioBtn

@@ -99,19 +99,25 @@ def loadFiles():
         CLASS_INFO = OrderedDict(
             sorted(CLASS_INFO.items(), key=lambda x: x[1]["time_weekday"]))
 
-    # removing classes with 0 duration, to indicate no class
-    for index, clsName in enumerate(list(CLASS_INFO.keys()), start=1):
-        timeJoining = datetime.strptime(
-            CLASS_INFO[clsName]["time_friday" if CURR_DAY_NUM == 4 else "time_weekday"], "%H:%M")
-        timeLeaving = datetime.strptime(
-            CLASS_INFO[clsName]["time_of_leaving_friday" if CURR_DAY_NUM == 4 else "time_of_leaving_weekday"], "%H:%M")
+    for index, cls in enumerate(list(CLASS_INFO.keys()), start=1):
+        # setting joinTime & leaveTime for every class
+        joinTimeSet = "time_friday" if CURR_DAY_NUM == 4 else "time_weekday"
+        leaveTimeSet = "time_of_leaving_friday" if CURR_DAY_NUM == 4 else "time_of_leaving_weekday"
 
+        timeJoining = datetime.strptime(CLASS_INFO[cls][joinTimeSet], "%H:%M")
+        timeLeaving = datetime.strptime(CLASS_INFO[cls][leaveTimeSet], "%H:%M")
+
+        CLASS_INFO[cls]["joinTime"] = str(timeJoining.strftime('%H:%M'))
+        CLASS_INFO[cls]["leaveTime"] = str(timeLeaving.strftime('%H:%M'))
+
+        # setting duration for every class
         # https://stackoverflow.com/questions/3096953/how-to-calculate-the-time-interval-between-two-time-strings
-        durationOfClass = timeLeaving - timeJoining
-        CLASS_INFO[clsName]["duration"] = str(durationOfClass)[:-3]
+        durationOfClass = str(timeLeaving - timeJoining)[:-3]
+        CLASS_INFO[cls]["duration"] = durationOfClass
 
-        if str(durationOfClass) == "0:00:00":
-            del CLASS_INFO[clsName]
+        # removing classes with 0 duration, to indicate no class
+        if str(durationOfClass) == "0:00":
+            del CLASS_INFO[cls]
 
     return SETUP, CLASS_INFO, COLORS
 

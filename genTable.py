@@ -66,28 +66,20 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
             code = str(CLASS_INFO[clsName]["code"]).replace(" ", "")
             password = str(CLASS_INFO[clsName]["password"]).replace(" ", "")
 
-            timeJoining = datetime.strptime(
-                CLASS_INFO[clsName]["time_friday" if CURR_DAY_NUM == 4 else "time_weekday"], "%H:%M")
-            timeLeaving = datetime.strptime(
-                CLASS_INFO[clsName]["time_of_leaving_friday" if CURR_DAY_NUM == 4 else "time_of_leaving_weekday"], "%H:%M")
+            timeJoining = CLASS_INFO[clsName]["joinTime"]
+            timeLeaving = CLASS_INFO[clsName]["leaveTime"]
+            durationOfClass = CLASS_INFO[clsName]["duration"]
 
-            # https://stackoverflow.com/questions/3096953/how-to-calculate-the-time-interval-between-two-time-strings
-            durationOfClass = timeLeaving - timeJoining
+            # adding colors
+            color = COLORS["past"] if CURR_TIME > timeJoining else COLORS["future"]
+            coloredTimeJoining = Text.assemble((f"{timeJoining}", color))
 
-            timeJoining = timeJoining.strftime('%H:%M')
-            timeLeaving = timeLeaving.strftime('%H:%M')
-
-            color = COLORS["past"] if CURR_TIME > str(
-                timeJoining) else COLORS["future"]
-            coloredTimeJoining = Text.assemble(
-                (f"{timeJoining}", color)
-            )
-            color = COLORS["future"] if CURR_TIME < str(
-                timeLeaving) else COLORS["past"]
+            # adding colors
+            color = COLORS["future"] if CURR_TIME < timeLeaving else COLORS["past"]
             coloredTimeLeaving = Text.assemble((f"{timeLeaving}", color))
 
             table.add_row(str(index), clsName, code, password, coloredTimeJoining,
-                          coloredTimeLeaving, str(durationOfClass)[:-3])
+                          coloredTimeLeaving, durationOfClass)
 
         return table
 
@@ -173,5 +165,5 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
             Align(bottomRightComponents, align="right", vertical="bottom")
         )
 
-    # clear()
+    clear()
     print(layout)
