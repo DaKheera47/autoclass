@@ -142,7 +142,7 @@ def startLaunching(className):
 
     if isConfirmed == "OK":
         status = launchClass(className)
-        log(status["message"], status["error"])
+        log(f'{className} - {status["message"]}', status["error"])
 
 
 def startLeaving(cls, code_to_use, password_to_use):
