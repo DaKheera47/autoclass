@@ -179,7 +179,7 @@ def startLeaving(cls):
 if __name__ == '__main__':
     SETUP, CLASS_INFO, _ = loadFiles()
 
-    genTable(CLASS_INFO, tagline="Choose your class by the class number", footer=False)
+    genTable(CLASS_INFO, tagline="Choose a class from the table above", footer=False)
     cls = input(f"Choose your code here ==>")
     className = CLASS_INFO[int(cls) - 1]["class"]
     # className = list(CLASS_INFO.keys())[int(cls) - 1]

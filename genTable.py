@@ -25,28 +25,29 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
     CUR_PATH = os.path.dirname(os.path.realpath(__file__))
     CURR_TIME = datetime.now().strftime("%H:%M")
     DATE_STRING = datetime.now().strftime("%H:%M - %d/%m/%y - %A")
+    DATE = datetime.now().strftime("%d/%m/%y")
+    DAY = datetime.now().strftime("%A")
     CURR_DAY_NUM = datetime.today().weekday()
     SETUP, _, COLORS = loadFiles()
 
     def genClassList():
-        if tagline != "":
-            tableContent = Text.assemble((
-                f"{DATE_STRING} \n {tagline}", COLORS["highlight"]))
-        else:
-            try:
-                data = getNextClass()
-                nextclsName = data["class"]
-                event = data["event"]
-                timeTillNextEvent = data["timeTillNextEvent"]
+        # if tagline != "":
+        #     tableContent = Text.assemble((
+        #         f"{DATE_STRING} \n {tagline}", COLORS["highlight"]))
+        # else:
+        #     try:
+        #         data = getNextClass()
+        #         nextclsName = data["class"]
+        #         event = data["event"]
+        #         timeTillNextEvent = data["timeTillNextEvent"]
 
-                tableContent = Text.assemble((
-                    f"{DATE_STRING} \n {event} {nextclsName} in {timeTillNextEvent}", COLORS["highlight"]))
-            except Exception as e:
-                tableContent = Text.assemble((
-                    f"{DATE_STRING} \n Done with classes for today :)", COLORS["highlight"]))
+        #         tableContent = Text.assemble((
+        #             f"{DATE_STRING} \n {event} {nextclsName} in {timeTillNextEvent}", COLORS["highlight"]))
+        #     except Exception as e:
+        #         tableContent = Text.assemble((
+        #             f"{DATE_STRING} \n Done with classes for today :)", COLORS["highlight"]))
 
-        table = Table(caption=tableContent,
-                      style=COLORS["text-color"], box=box.HORIZONTALS)
+        table = Table(style=COLORS["text-color"], box=box.HORIZONTALS)
         table.add_column("#", justify="center",
                          style=COLORS["text-color"], no_wrap=True)
         table.add_column("Title", justify="center",
@@ -79,6 +80,37 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
 
             table.add_row(str(index), clsName["class"], code, password, coloredTimeJoining,
                           coloredTimeLeaving, durationOfClass)
+
+        return table
+
+    def genTimeData():
+        table = Table(box=box.HORIZONTALS, expand=True)
+        table.add_column("Description", justify="left",
+                         style=COLORS["text-color"], no_wrap=True)
+        table.add_column("Setting", justify="left",
+                         style=COLORS["text-color"])
+
+        if tagline != "":
+            rowText = "Choose"
+            tableContent = Text.assemble((f"{tagline}", COLORS["highlight"]))
+        else:
+            try:
+                data = getNextClass()
+                nextclsName = data["class"]
+                event = data["event"]
+                timeTillNextEvent = data["timeTillNextEvent"]
+                rowText = "Next Event"
+                tableContent = Text.assemble(
+                    (f"{event} {nextclsName} in {timeTillNextEvent}", COLORS["highlight"]))
+
+            except Exception as e:
+                rowText = "Status"
+                tableContent = Text.assemble(f"Done with classes for today :)")
+
+        table.add_row("Time", CURR_TIME)
+        table.add_row("Date", DATE)
+        table.add_row("Day", DAY)
+        table.add_row(rowText, tableContent)
 
         return table
 
@@ -151,14 +183,17 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
     layout["middle"]["left"].update(
         Padding(
             Group(
-                Markdown(leftMdx)
+                Align(Text.assemble(("Date & Time",
+                                     "white bold underline")), align="center"),
+                genTimeData()
             ), style=COLORS["text-color"]
         )
     )
     layout["middle"]["right"].update(
         Padding(
             Group(
-                Align(Text.assemble(("Current Configuration", "white bold underline")), align="center"),
+                Align(Text.assemble(("Current Configuration",
+                      "white bold underline")), align="center"),
                 genConfig()
             ), (0, 0, 0, 1), style=COLORS["text-color"])
     )
