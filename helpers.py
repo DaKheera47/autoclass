@@ -19,21 +19,45 @@ defaultTimeout = 600
 def loadFiles():
     CURR_DAY_NUM = datetime.today().weekday()
 
-    if not os.path.exists(os.path.dirname(f"{CUR_PATH}/config/classes.yaml")):
-        try:
-            os.makedirs(os.path.dirname(f"{CUR_PATH}/config/classes.yaml"))
-        except OSError as exc:  # Guard against race condition
-            if exc.errno != errno.EEXIST:
-                raise
+    # create default settings if they dont exist already
+    if not os.path.exists(f"{CUR_PATH}/config/classes.csv"):
+        csv_file = open(f"{CUR_PATH}/config/classes.csv", "w")
+        writer = csv.writer(csv_file)
+
+        SAMPLE_CLASS = [
+            ["Class", "Day", "Meeting ID", "Meeting Password",
+             "Join Time", "Leave Time"],
+            ["Test Class", "Monday", "Update Me!", "Update Me!", "00:00", "00:01"],
+            ["Test Class", "Tuesday", "Update Me!",
+             "Update Me!", "00:00", "00:01"],
+            ["Test Class", "Wednesday", "Update Me!",
+             "Update Me!", "00:00", "00:01"],
+            ["Test Class", "Thursday", "Update Me!",
+             "Update Me!", "00:00", "00:01"],
+            ["Test Class", "Friday", "Update Me!", "Update Me!", "00:00", "00:01"],
+            ["Test Class", "Saturday", "Update Me!",
+             "Update Me!", "00:00", "00:01"],
+            ["Test Class", "Sunday", "Update Me!", "Update Me!", "00:00", "00:01"],
+        ]
+
+        for i, value in enumerate(SAMPLE_CLASS):
+            writer.writerow(value)
+
+        csv_file.close()
 
     if not os.path.exists(f"{CUR_PATH}/config/config.yaml"):
         file = open(f"{CUR_PATH}/config/config.yaml", "w")
         SAMPLE_CONFIG = [
-            {'description': 'Delay between every action taken', 'value': 0.8},
-            {'description': 'Percentage accuracy to match image', 'value': 0.99},
-            {'description': 'Confirm before joining', 'value': False},
-            {'description': 'Confirm before leaving', 'value': False},
-            {'description': 'Record meetings with OBS Studio', 'value': True}
+            {'description': 'Delay between every action taken',
+                'value': 0.8, 'name': 'delayBetweenActions'},
+            {'description': 'Percentage accuracy to match image',
+                'value': 0.99, 'name': 'globalConfidence'},
+            {'description': 'Confirm before joining', 'value': False,
+                'name': 'requireConfirmationBeforeJoining'},
+            {'description': 'Confirm before leaving', 'value': False,
+                'name': 'requireConfirmationBeforeLeaving'},
+            {'description': 'Record meetings with OBS Studio',
+                'value': True, 'name': 'record'}
         ]
 
         yaml.dump(SAMPLE_CONFIG, file)
@@ -67,11 +91,8 @@ def loadFiles():
         except yaml.YAMLError as exc:
             print(exc)
 
-    now = datetime.now()
-    TODAY = now.strftime("%A")
-
-    timings = []
-    with open(f"{CUR_PATH}/config/Classes.csv", mode='r') as csv_file:
+    with open(f"{CUR_PATH}/config/classes.csv", 'r') as csv_file:
+        timings = []
         csv_reader = csv.DictReader(csv_file)
         line_count = 0
         for row in csv_reader:
@@ -80,6 +101,9 @@ def loadFiles():
             timings.append(row)
             line_count += 1
 
+    # cleaning up collected data
+    now = datetime.now()
+    TODAY = now.strftime("%A")
     CLASS_INFO = []
     for i, time in enumerate(timings):
         # converting keys to lowercase
