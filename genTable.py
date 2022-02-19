@@ -20,6 +20,7 @@ leftMdx = """##  Instructions
 -   Change the default class by opening and changing the classes.yaml in the config folder
 -   Update the configuration by referring to the readme on the GitHub Page"""
 
+tableBoxLook = box.MINIMAL
 
 def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagline: str = ""):
     CUR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -31,23 +32,7 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
     SETUP, _, COLORS = loadFiles()
 
     def genClassList():
-        # if tagline != "":
-        #     tableContent = Text.assemble((
-        #         f"{DATE_STRING} \n {tagline}", COLORS["highlight"]))
-        # else:
-        #     try:
-        #         data = getNextClass()
-        #         nextclsName = data["class"]
-        #         event = data["event"]
-        #         timeTillNextEvent = data["timeTillNextEvent"]
-
-        #         tableContent = Text.assemble((
-        #             f"{DATE_STRING} \n {event} {nextclsName} in {timeTillNextEvent}", COLORS["highlight"]))
-        #     except Exception as e:
-        #         tableContent = Text.assemble((
-        #             f"{DATE_STRING} \n Done with classes for today :)", COLORS["highlight"]))
-
-        table = Table(style=COLORS["text-color"], box=box.HORIZONTALS)
+        table = Table(style=COLORS["text-color"], box=tableBoxLook)
         table.add_column("#", justify="center",
                          style=COLORS["text-color"], no_wrap=True)
         table.add_column("Title", justify="center",
@@ -84,7 +69,7 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
         return table
 
     def genTimeData():
-        table = Table(box=box.HORIZONTALS, expand=True)
+        table = Table(box=tableBoxLook, expand=True)
         table.add_column("Description", justify="left",
                          style=COLORS["text-color"], no_wrap=True)
         table.add_column("Setting", justify="left",
@@ -115,7 +100,7 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
         return table
 
     def genConfig():
-        table = Table(box=box.HORIZONTALS, expand=True)
+        table = Table(box=tableBoxLook, expand=True)
         table.add_column("Description", justify="left",
                          style=COLORS["text-color"], no_wrap=True)
         table.add_column("Setting", justify="left",
