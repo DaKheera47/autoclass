@@ -10,11 +10,11 @@ from functools import partial
 import cursor
 cursor.hide()
 
-# If True, save screenshots for clicks and key presses.
-pag.LOG_SCREENSHOTS = True
+# # If True, save screenshots for clicks and key presses.
+# pag.LOG_SCREENSHOTS = True
 
-# If not None, PyAutoGUI deletes old screenshots when this limit has been reached:
-pag.LOG_SCREENSHOTS_LIMIT = 50
+# # If not None, PyAutoGUI deletes old screenshots when this limit has been reached:
+# pag.LOG_SCREENSHOTS_LIMIT = 50
 
 
 def checkForClassTime():
@@ -25,28 +25,36 @@ def checkForClassTime():
 
     genTable(CLASS_INFO)
 
-    for cls in CLASS_INFO.items():
+    for cls in CLASS_INFO:
         # getting class code
-        code_to_use = str(CLASS_INFO[cls[0]]["code"])
-        password_to_use = str(CLASS_INFO[cls[0]]["password"])
+        code_to_use = str(cls["meeting id"])
+        password_to_use = str(cls["meeting password"])
 
-        # checking if today is between monday and thursday before joining
-        if CURR_TIME == cls[1]["time_weekday"] and CURR_DAY_NUM in range(0, 4):
-            EVENT_LOOP.append((partial(startLaunching, cls[0])))
+        # add a launch event to event loop if join time
+        if CURR_TIME == cls["join time"]:
+            EVENT_LOOP.append((partial(startLaunching, cls)))
 
-        # checking if today is friday before joining
-        if CURR_TIME == cls[1]["time_friday"] and CURR_DAY_NUM == 4:
-            EVENT_LOOP.append((partial(startLaunching, cls[0])))
+        # add a leave event to event loop if leaving time
+        if CURR_TIME == cls["leave time"]:
+            EVENT_LOOP.append((partial(startLeaving, cls)))
 
-        # checking if today is friday before leaving
-        if CURR_TIME == cls[1]["time_of_leaving_friday"] and CURR_DAY_NUM == 4:
-            EVENT_LOOP.append(
-                (partial(startLeaving, cls, code_to_use, password_to_use)))
+        # # checking if today is between monday and thursday before joining
+        # if CURR_TIME == cls[1]["time_weekday"] and CURR_DAY_NUM in range(0, 4):
+        #     EVENT_LOOP.append((partial(startLaunching, cls[0])))
 
-        # checking if today is weekday before leaving
-        if CURR_TIME == cls[1]["time_of_leaving_weekday"] and CURR_DAY_NUM in range(0, 4):
-            EVENT_LOOP.append(
-                (partial(startLeaving, cls, code_to_use, password_to_use)))
+        # # checking if today is friday before joining
+        # if CURR_TIME == cls[1]["time_friday"] and CURR_DAY_NUM == 4:
+        #     EVENT_LOOP.append((partial(startLaunching, cls[0])))
+
+        # # checking if today is friday before leaving
+        # if CURR_TIME == cls[1]["time_of_leaving_friday"] and CURR_DAY_NUM == 4:
+        #     EVENT_LOOP.append(
+        #         (partial(startLeaving, cls, code_to_use, password_to_use)))
+
+        # # checking if today is weekday before leaving
+        # if CURR_TIME == cls[1]["time_of_leaving_weekday"] and CURR_DAY_NUM in range(0, 4):
+        #     EVENT_LOOP.append(
+        #         (partial(startLeaving, cls, code_to_use, password_to_use)))
 
     for event in EVENT_LOOP:
         event()

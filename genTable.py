@@ -1,6 +1,6 @@
 from rich.table import Table
 import yaml
-from rich import print
+from rich import print, box
 from rich.panel import Panel
 import time
 from rich.align import Align
@@ -16,12 +16,12 @@ import os
 import cursor
 cursor.hide()
 
-leftMdx = """#  Instructions
+leftMdx = """##  Instructions
 -   Change the default class by opening and changing the classes.yaml in the config folder
 -   Update the configuration by referring to the readme on the GitHub Page"""
 
 
-def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
+def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagline: str = ""):
     CUR_PATH = os.path.dirname(os.path.realpath(__file__))
     CURR_TIME = datetime.now().strftime("%H:%M")
     DATE_STRING = datetime.now().strftime("%H:%M - %d/%m/%y - %A")
@@ -45,8 +45,8 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
                 tableContent = Text.assemble((
                     f"{DATE_STRING} \n Done with classes for today :)", COLORS["highlight"]))
 
-        table = Table(title="Class List", caption=tableContent,
-                      style=COLORS["text-color"])
+        table = Table(caption=tableContent,
+                      style=COLORS["text-color"], box=box.HORIZONTALS)
         table.add_column("#", justify="center",
                          style=COLORS["text-color"], no_wrap=True)
         table.add_column("Title", justify="center",
@@ -62,13 +62,12 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
         table.add_column("Duration", justify="center",
                          style=COLORS["text-color"])
 
-        for index, clsName in enumerate(list(CLASS_INFO.keys()), start=1):
-            code = str(CLASS_INFO[clsName]["code"]).replace(" ", "")
-            password = str(CLASS_INFO[clsName]["password"]).replace(" ", "")
-
-            timeJoining = CLASS_INFO[clsName]["joinTime"]
-            timeLeaving = CLASS_INFO[clsName]["leaveTime"]
-            durationOfClass = CLASS_INFO[clsName]["duration"]
+        for index, clsName in enumerate(CLASS_INFO, start=1):
+            code = clsName["meeting id"]
+            password = clsName["meeting password"]
+            timeJoining = clsName["join time"]
+            timeLeaving = clsName["leave time"]
+            durationOfClass = clsName["duration"]
 
             # adding colors
             color = COLORS["past"] if CURR_TIME > timeJoining else COLORS["future"]
@@ -78,13 +77,13 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
             color = COLORS["future"] if CURR_TIME < timeLeaving else COLORS["past"]
             coloredTimeLeaving = Text.assemble((f"{timeLeaving}", color))
 
-            table.add_row(str(index), clsName, code, password, coloredTimeJoining,
+            table.add_row(str(index), clsName["class"], code, password, coloredTimeJoining,
                           coloredTimeLeaving, durationOfClass)
 
         return table
 
     def genConfig():
-        table = Table()
+        table = Table(box=box.HORIZONTALS, expand=True)
         table.add_column("Description", justify="left",
                          style=COLORS["text-color"], no_wrap=True)
         table.add_column("Setting", justify="left",
@@ -125,8 +124,11 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
     bottomRightComponents = Group(
         Text.assemble("Made By Shaheer ", ("Sarfaraz", COLORS["highlight"])),
     )
+    bottomMidComponents = Group(
+        Text.assemble(("Snitches Get Stitches", COLORS["highlight"])),
+    )
     bottomLeftComponents = Group(
-        Text.assemble(("AutoClass", COLORS["highlight"])),
+        Text.assemble(("AutoClass")),
     )
     layout["middle"].split_row(
         Layout(name="left"),
@@ -136,12 +138,15 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
     if footer:
         layout["bottom"].split_row(
             Layout(name="left"),
+            Layout(name="mid"),
             Layout(name="right"),
         )
 
     # rendering components
     layout["top"].update(
-        Align(classListTable, align="center", vertical="middle")
+        Group(
+            Align(classListTable, align="center", vertical="middle")
+        )
     )
     layout["middle"]["left"].update(
         Padding(
@@ -153,13 +158,16 @@ def genTable(CLASS_INFO, leftMdx=leftMdx, footer=True, tagline=""):
     layout["middle"]["right"].update(
         Padding(
             Group(
-                Markdown("# Current Configuration"),
+                Align(Text.assemble(("Current Configuration", "white bold underline")), align="center"),
                 genConfig()
             ), (0, 0, 0, 1), style=COLORS["text-color"])
     )
     if footer:
         layout["bottom"]["left"].update(
             Align(bottomLeftComponents, align="left", vertical="bottom")
+        )
+        layout["bottom"]["mid"].update(
+            Align(bottomMidComponents, align="center", vertical="bottom")
         )
         layout["bottom"]["right"].update(
             Align(bottomRightComponents, align="right", vertical="bottom")

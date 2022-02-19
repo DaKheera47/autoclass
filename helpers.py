@@ -9,6 +9,8 @@ from datetime import datetime
 from collections import OrderedDict
 from rich.progress import Progress
 from win32gui import IsWindowVisible, GetWindowText, EnumWindows, ShowWindow, SetForegroundWindow, SystemParametersInfo
+import csv
+
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 cursor.hide()
 defaultTimeout = 600
@@ -23,23 +25,6 @@ def loadFiles():
         except OSError as exc:  # Guard against race condition
             if exc.errno != errno.EEXIST:
                 raise
-
-    # making new classes file if it doesnt already exist
-    if not os.path.exists(f"{CUR_PATH}/config/classes.yaml"):
-        file = open(f"{CUR_PATH}/config/classes.yaml", "w")
-        SAMPLE_CLASS = {
-            "Default Class": {
-                "code": 'Change code',
-                "password": 'Change Password',
-                "time_friday": "00:00",
-                "time_of_leaving_friday": "00:01",
-                "time_of_leaving_weekday": "00:01",
-                "time_weekday": "00:00"
-            }
-        }
-
-        yaml.dump(SAMPLE_CLASS, file)
-        file.close()
 
     if not os.path.exists(f"{CUR_PATH}/config/config.yaml"):
         file = open(f"{CUR_PATH}/config/config.yaml", "w")
@@ -76,48 +61,49 @@ def loadFiles():
         except yaml.YAMLError as exc:
             print(exc)
 
-    with open(f"{CUR_PATH}/config/classes.yaml", 'r') as stream:
-        try:
-            CLASS_INFO = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
     with open(f"{CUR_PATH}/config/styles.yaml", 'r') as stream:
         try:
             COLORS = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
 
-    # sorting classes
-    # https://stackoverflow.com/questions/42398375/sorting-a-dictionary-of-dictionaries-python
-    if CURR_DAY_NUM == 4:
-        # friday timings
-        CLASS_INFO = OrderedDict(
-            sorted(CLASS_INFO.items(), key=lambda x: x[1]["time_friday"]))
-    else:
-        # any other day
-        CLASS_INFO = OrderedDict(
-            sorted(CLASS_INFO.items(), key=lambda x: x[1]["time_weekday"]))
+    now = datetime.now()
+    TODAY = now.strftime("%A")
 
-    for index, cls in enumerate(list(CLASS_INFO.keys()), start=1):
-        # setting joinTime & leaveTime for every class
-        joinTimeSet = "time_friday" if CURR_DAY_NUM == 4 else "time_weekday"
-        leaveTimeSet = "time_of_leaving_friday" if CURR_DAY_NUM == 4 else "time_of_leaving_weekday"
+    timings = []
+    with open(f"{CUR_PATH}/config/Classes.csv", mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                line_count += 1
+            timings.append(row)
+            line_count += 1
 
-        timeJoining = datetime.strptime(CLASS_INFO[cls][joinTimeSet], "%H:%M")
-        timeLeaving = datetime.strptime(CLASS_INFO[cls][leaveTimeSet], "%H:%M")
+    CLASS_INFO = []
+    for i, time in enumerate(timings):
+        # converting keys to lowercase
+        time = {k.lower(): v for k, v in time.items()}
 
-        CLASS_INFO[cls]["joinTime"] = str(timeJoining.strftime('%H:%M'))
-        CLASS_INFO[cls]["leaveTime"] = str(timeLeaving.strftime('%H:%M'))
+        if time["day"] == TODAY:
+            # converting string time to datetime
+            joinDatetime = datetime.strptime(time["join time"], "%H:%M")
+            leaveDatetime = datetime.strptime(time["leave time"], "%H:%M")
 
-        # setting duration for every class
-        # https://stackoverflow.com/questions/3096953/how-to-calculate-the-time-interval-between-two-time-strings
-        durationOfClass = str(timeLeaving - timeJoining)[:-3]
-        CLASS_INFO[cls]["duration"] = durationOfClass
+            # converting datetime object to correct string format ie 09:40
+            time["join time"] = joinDatetime.strftime("%H:%M")
+            time["leave time"] = leaveDatetime.strftime("%H:%M")
 
-        # removing classes with 0 duration, to indicate no class
-        if str(durationOfClass) == "0:00":
-            del CLASS_INFO[cls]
+            # setting duration
+            durationOfClass = str(leaveDatetime - joinDatetime)[:-3]
+            time["duration"] = durationOfClass
+
+            # dont add classes with 0 duration, to indicate no class
+            if str(durationOfClass) != "0:00":
+                CLASS_INFO.append(time)
+
+    # sort according to joinTime
+    CLASS_INFO = sorted(CLASS_INFO, key=lambda d: d['join time'])
 
     return SETUP, CLASS_INFO, COLORS
 
@@ -290,31 +276,15 @@ def getNextClass():
     CURR_DAY_NUM = datetime.today().weekday()
 
     # find next class join or leave time
-    for cls in list(CLASS_INFO.keys()):
-        CURR_CLASS = CLASS_INFO[cls]
+    for CURR_CLASS in CLASS_INFO:
+        timeToJoining = differenceNowToTime(CURR_CLASS["join time"])
+        timeToLeaving = differenceNowToTime(CURR_CLASS["leave time"])
 
-        if CURR_DAY_NUM == 4:
+        if CURR_TIME < CURR_CLASS["join time"]:
+            return {"class": CURR_CLASS["class"], "event": "Joining", "timeTillNextEvent": timeToJoining}
 
-            if CURR_TIME < CLASS_INFO[cls]["time_friday"]:
-                # time to next class
-                TTNC = differenceNowToTime(CURR_CLASS["time_friday"])
-                return {"class": cls, "event": "Joining", "timeTillNextEvent": TTNC}
-
-            if CURR_TIME < CLASS_INFO[cls]["time_of_leaving_friday"]:
-                TTNC = differenceNowToTime(
-                    CURR_CLASS["time_of_leaving_friday"])
-                return {"class": cls, "event": "Leaving", "timeTillNextEvent": TTNC}
-
-        if CURR_DAY_NUM in range(0, 4):
-
-            if CURR_TIME < CLASS_INFO[cls]["time_weekday"]:
-                TTNC = differenceNowToTime(CURR_CLASS["time_weekday"])
-                return {"class": cls, "event": "Joining", "timeTillNextEvent": TTNC}
-
-            if CURR_TIME < CLASS_INFO[cls]["time_of_leaving_weekday"]:
-                TTNC = differenceNowToTime(
-                    CURR_CLASS["time_of_leaving_weekday"])
-                return {"class": cls, "event": "Leaving", "timeTillNextEvent": TTNC}
+        if CURR_TIME < CURR_CLASS["leave time"]:
+            return {"class": CURR_CLASS["class"], "event": "Leaving", "timeTillNextEvent": timeToLeaving}
 
 
 def getConfigValue(name: str):

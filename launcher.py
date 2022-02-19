@@ -52,7 +52,7 @@ def toggleRecording(event="start"):
     pag.click(x=1778, y=908)
 
 
-def launchClass(className):
+def launchClass(className: str):
     SETUP, CLASS_INFO, _ = loadFiles()
     pag.PAUSE = getConfigValue("delayBetweenActions")
     leftMdx = f"""# Now Launching {className}
@@ -64,15 +64,14 @@ def launchClass(className):
     -   Join with Computer Audio
 """
 
-    for i, cls in enumerate(list(CLASS_INFO.keys())):
-        if cls == className:
-            classDetails = list(CLASS_INFO.items())[i][1]
-
+    for i, cls in enumerate(CLASS_INFO):
+        if cls["class"] == className:
+            # classDetails = CLASS_INFO
             # generating custom table
-            genTable({className: classDetails}, leftMdx=leftMdx,
+            genTable([cls], leftMdx=leftMdx,
                      footer=False, tagline=f"Now Launching {className}")
-            code = classDetails["code"]
-            password = classDetails["password"]
+            code = cls["meeting id"]
+            password = cls["meeting password"]
 
     if getConfigValue("record"):
         # start recording
@@ -141,11 +140,11 @@ def startLaunching(className):
         )
 
     if isConfirmed == "OK":
-        status = launchClass(className)
-        log(f'{className} - {status["message"]}', status["error"])
+        status = launchClass(className["class"])
+        log(f'{className["class"]} - {status["message"]}', status["error"])
 
 
-def startLeaving(cls, code_to_use, password_to_use):
+def startLeaving(cls):
     SETUP, CLASS_INFO, _ = loadFiles()
     CURR_TIME = datetime.now().strftime("%H:%M")
     CURR_DAY_NUM = datetime.today().weekday()
@@ -180,7 +179,8 @@ def startLeaving(cls, code_to_use, password_to_use):
 if __name__ == '__main__':
     SETUP, CLASS_INFO, _ = loadFiles()
 
-    genTable(CLASS_INFO, footer=False)
+    genTable(CLASS_INFO, tagline="Choose your class by the class number", footer=False)
     cls = input(f"Choose your code here ==>")
-    className = list(CLASS_INFO.keys())[int(cls) - 1]
+    className = CLASS_INFO[int(cls) - 1]["class"]
+    # className = list(CLASS_INFO.keys())[int(cls) - 1]
     launchClass(className)
