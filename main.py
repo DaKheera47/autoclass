@@ -10,12 +10,6 @@ from functools import partial
 import cursor
 cursor.hide()
 
-# # If True, save screenshots for clicks and key presses.
-# pag.LOG_SCREENSHOTS = True
-
-# # If not None, PyAutoGUI deletes old screenshots when this limit has been reached:
-# pag.LOG_SCREENSHOTS_LIMIT = 50
-
 
 def checkForClassTime():
     SETUP, CLASS_INFO, _ = loadFiles()
@@ -37,24 +31,6 @@ def checkForClassTime():
         # add a leave event to event loop if leaving time
         if CURR_TIME == cls["leave time"]:
             EVENT_LOOP.append((partial(startLeaving, cls)))
-
-        # # checking if today is between monday and thursday before joining
-        # if CURR_TIME == cls[1]["time_weekday"] and CURR_DAY_NUM in range(0, 4):
-        #     EVENT_LOOP.append((partial(startLaunching, cls[0])))
-
-        # # checking if today is friday before joining
-        # if CURR_TIME == cls[1]["time_friday"] and CURR_DAY_NUM == 4:
-        #     EVENT_LOOP.append((partial(startLaunching, cls[0])))
-
-        # # checking if today is friday before leaving
-        # if CURR_TIME == cls[1]["time_of_leaving_friday"] and CURR_DAY_NUM == 4:
-        #     EVENT_LOOP.append(
-        #         (partial(startLeaving, cls, code_to_use, password_to_use)))
-
-        # # checking if today is weekday before leaving
-        # if CURR_TIME == cls[1]["time_of_leaving_weekday"] and CURR_DAY_NUM in range(0, 4):
-        #     EVENT_LOOP.append(
-        #         (partial(startLeaving, cls, code_to_use, password_to_use)))
 
     for event in EVENT_LOOP:
         event()

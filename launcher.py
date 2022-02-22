@@ -55,21 +55,11 @@ def toggleRecording(event="start"):
 def launchClass(className: str):
     SETUP, CLASS_INFO, _ = loadFiles()
     pag.PAUSE = getConfigValue("delayBetweenActions")
-    leftMdx = f"""# Now Launching {className}
--   Steps involved:
-    -   Open Zoom
-    -   Click on Join Now button
-    -   Enter Meeting ID
-    -   Enter Meeting password
-    -   Join with Computer Audio
-"""
 
     for i, cls in enumerate(CLASS_INFO):
         if cls["class"] == className:
-            # classDetails = CLASS_INFO
             # generating custom table
-            genTable([cls], leftMdx=leftMdx,
-                     footer=False, tagline=f"Now Launching {className}")
+            genTable([cls], footer=False, tagline=f"Now Launching {className}")
             code = cls["meeting id"]
             password = cls["meeting password"]
 
@@ -134,17 +124,18 @@ def startLaunching(className):
     isConfirmed = "OK"
     if getConfigValue("requireConfirmationBeforeJoining"):
         isConfirmed = pag.confirm(
-            text=f'Do you want to join {className} class?',
-            title=f'Confirm joining of {className} class',
+            text=f'Do you want to join {className["class"]} class?',
+            title=f'Confirm joining of {className["class"]} class',
             buttons=['OK', 'Cancel']
         )
 
     if isConfirmed == "OK":
         status = launchClass(className["class"])
-        log(f'{className["class"]} - {status["message"]}', status["error"])
+        log(f'{className["class"]} - {status["message"]}',
+            not bool(status["error"]))
 
 
-def startLeaving(cls):
+def startLeaving(className):
     SETUP, CLASS_INFO, _ = loadFiles()
     CURR_TIME = datetime.now().strftime("%H:%M")
     CURR_DAY_NUM = datetime.today().weekday()
@@ -155,7 +146,7 @@ def startLeaving(cls):
 
     if getConfigValue("requireConfirmationBeforeLeaving"):
         isConfirmed = pag.confirm(
-            text=f'Are you sure you want to leave the {cls[0]} class?',
+            text=f'Are you sure you want to leave the {className["class"]} class?',
             title=f'Confirm leaving class?',
             buttons=['OK', 'Cancel']
         )
@@ -182,5 +173,4 @@ if __name__ == '__main__':
     genTable(CLASS_INFO, tagline="Choose a class from the table above", footer=False)
     cls = input(f"Choose your code here ==>")
     className = CLASS_INFO[int(cls) - 1]["class"]
-    # className = list(CLASS_INFO.keys())[int(cls) - 1]
     launchClass(className)
