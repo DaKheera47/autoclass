@@ -52,6 +52,8 @@ def loadFiles():
                 'value': 0.8, 'name': 'delayBetweenActions'},
             {'description': 'Percentage accuracy to match image',
                 'value': 0.99, 'name': 'globalConfidence'},
+            {'description': 'Minutes from end of class to attempt joining',
+                'value': 5, 'name': 'minsFromEndToJoin'},
             {'description': 'Confirm before joining', 'value': False,
                 'name': 'requireConfirmationBeforeJoining'},
             {'description': 'Confirm before leaving', 'value': False,

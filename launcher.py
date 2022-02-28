@@ -62,6 +62,7 @@ def launchClass(className: str):
             genTable([cls], footer=False, tagline=f"Now Launching {className}")
             code = cls["meeting id"]
             password = cls["meeting password"]
+            duration = cls["duration"]
 
     if getConfigValue("record"):
         # start recording
@@ -100,11 +101,27 @@ def launchClass(className: str):
     if joinPassword["error"]:
         return joinPassword
 
+    # INFO: extremely scuffed solution. pls fix
+    # converting string time to datetime
+    duration = datetime.strptime(cls["duration"], "%H:%M")
+    deltaFiveMins = timedelta(minutes=int(getConfigValue("minsFromEndToJoin")))
+
+    # calculating how long to check for
+    timeToCheck = duration - deltaFiveMins
+
+    # getting individual values
+    hrs = int(timeToCheck.strftime("%H"))
+    mins = int(timeToCheck.strftime("%M"))
+    secs = int(timeToCheck.strftime("%S"))
+
+    # converting to seconds
+    timeToCheck = (hrs * 3600) + (mins * 60) + (secs * 1)
+
     # join with computer audio
     joinWithCompAudioBtn = findAndClick(["joinWithComputerAudioBtn.PNG"],
                                         MSGS["compAudio"]["searching"],
                                         MSGS["compAudio"]["error"],
-                                        timeout=60 * 20,
+                                        timeout=timeToCheck,
                                         confidence=getConfigValue("globalConfidence"))
     if joinWithCompAudioBtn["error"]:
         return joinWithCompAudioBtn
