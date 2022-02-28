@@ -22,6 +22,7 @@ leftMdx = """##  Instructions
 
 tableBoxLook = box.MINIMAL
 
+
 def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagline: str = ""):
     CUR_PATH = os.path.dirname(os.path.realpath(__file__))
     CURR_TIME = datetime.now().strftime("%H:%M")
@@ -160,11 +161,29 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
         )
 
     # rendering components
-    layout["top"].update(
-        Group(
-            Align(classListTable, align="center", vertical="middle")
+#     doneComponent = Text.assemble(("""
+#  ___                __      ___ _   _       ___ _
+# |   \ ___ _ _  ___  \ \    / (_) |_| |_    / __| |__ _ ______ ___ ___
+# | |) / _ \ ' \/ -_)  \ \/\/ /| |  _| ' \  | (__| / _` (_-<_-</ -_|_-<
+# |___/\___/_||_\___|   \_/\_/ |_|\__|_||_|  \___|_\__,_/__/__/\___/__/"""
+# , "green"))
+    doneComponent = Text.assemble(("""
+·▄▄▄▄         ▐ ▄ ▄▄▄ .    ▄▄▌ ▐ ▄▌▪  ▄▄▄▄▄ ▄ .▄     ▄▄· ▄▄▌   ▄▄▄· .▄▄ · .▄▄ · ▄▄▄ ..▄▄ · 
+██▪ ██ ▪     •█▌▐█▀▄.▀·    ██· █▌▐███ •██  ██▪▐█    ▐█ ▌▪██•  ▐█ ▀█ ▐█ ▀. ▐█ ▀. ▀▄.▀·▐█ ▀. 
+▐█· ▐█▌ ▄█▀▄ ▐█▐▐▌▐▀▀▪▄    ██▪▐█▐▐▌▐█· ▐█.▪██▀▐█    ██ ▄▄██▪  ▄█▀▀█ ▄▀▀▀█▄▄▀▀▀█▄▐▀▀▪▄▄▀▀▀█▄
+██. ██ ▐█▌.▐▌██▐█▌▐█▄▄▌    ▐█▌██▐█▌▐█▌ ▐█▌·██▌▐▀    ▐███▌▐█▌▐▌▐█ ▪▐▌▐█▄▪▐█▐█▄▪▐█▐█▄▄▌▐█▄▪▐█
+▀▀▀▀▀•  ▀█▄▀▪▀▀ █▪ ▀▀▀      ▀▀▀▀ ▀▪▀▀▀ ▀▀▀ ▀▀▀ ·    ·▀▀▀ .▀▀▀  ▀  ▀  ▀▀▀▀  ▀▀▀▀  ▀▀▀  ▀▀▀▀ 
+""", "green"))
+
+    if not CLASS_INFO:
+        layout["top"].update(
+            Group(Align(doneComponent, align="center", vertical="middle")))
+    else:
+        layout["top"].update(
+            Group(
+                Align(classListTable, align="center", vertical="middle")
+            )
         )
-    )
     layout["middle"]["left"].update(
         Padding(
             Group(
@@ -193,5 +212,5 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
             Align(bottomRightComponents, align="right", vertical="bottom")
         )
 
-    clear()
+    # clear()
     print(layout)
