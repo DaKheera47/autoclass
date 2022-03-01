@@ -4,7 +4,7 @@ import os
 import yaml
 import sys
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from helpers import findAndClick, findAndInputText, loadFiles, clear, bringWindowToFocus, log, getConfigValue
 from genTable import genTable
 import cursor
@@ -29,7 +29,7 @@ MSGS = {
         "error": "Couldn't Find Join With Computer Audio Button or The Host Didn't Allow Entry",
     },
     "endedConfirmation": {
-        "searching": "Searching if there is a confirmation for has this meeting ended or not",
+        "searching": "Locate end free meeting button",
         "error": "There's no confirmation required!",
     },
 }
