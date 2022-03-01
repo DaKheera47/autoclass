@@ -12,6 +12,7 @@ from rich.markdown import Markdown
 from rich.padding import Padding
 from datetime import datetime
 from helpers import loadFiles, getNextClass, clear
+from pyfiglet import Figlet
 import os
 import cursor
 cursor.hide()
@@ -161,29 +162,25 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
         )
 
     # rendering components
-#     doneComponent = Text.assemble(("""
-#  ___                __      ___ _   _       ___ _
-# |   \ ___ _ _  ___  \ \    / (_) |_| |_    / __| |__ _ ______ ___ ___
-# | |) / _ \ ' \/ -_)  \ \/\/ /| |  _| ' \  | (__| / _` (_-<_-</ -_|_-<
-# |___/\___/_||_\___|   \_/\_/ |_|\__|_||_|  \___|_\__,_/__/__/\___/__/"""
-# , "green"))
-    doneComponent = Text.assemble(("""
-·▄▄▄▄         ▐ ▄ ▄▄▄ .    ▄▄▌ ▐ ▄▌▪  ▄▄▄▄▄ ▄ .▄     ▄▄· ▄▄▌   ▄▄▄· .▄▄ · .▄▄ · ▄▄▄ ..▄▄ · 
-██▪ ██ ▪     •█▌▐█▀▄.▀·    ██· █▌▐███ •██  ██▪▐█    ▐█ ▌▪██•  ▐█ ▀█ ▐█ ▀. ▐█ ▀. ▀▄.▀·▐█ ▀. 
-▐█· ▐█▌ ▄█▀▄ ▐█▐▐▌▐▀▀▪▄    ██▪▐█▐▐▌▐█· ▐█.▪██▀▐█    ██ ▄▄██▪  ▄█▀▀█ ▄▀▀▀█▄▄▀▀▀█▄▐▀▀▪▄▄▀▀▀█▄
-██. ██ ▐█▌.▐▌██▐█▌▐█▄▄▌    ▐█▌██▐█▌▐█▌ ▐█▌·██▌▐▀    ▐███▌▐█▌▐▌▐█ ▪▐▌▐█▄▪▐█▐█▄▪▐█▐█▄▄▌▐█▄▪▐█
-▀▀▀▀▀•  ▀█▄▀▪▀▀ █▪ ▀▀▀      ▀▀▀▀ ▀▪▀▀▀ ▀▀▀ ▀▀▀ ·    ·▀▀▀ .▀▀▀  ▀  ▀  ▀▀▀▀  ▀▀▀▀  ▀▀▀  ▀▀▀▀ 
-""", "green"))
-
-    if not CLASS_INFO:
-        layout["top"].update(
-            Group(Align(doneComponent, align="center", vertical="middle")))
-    else:
+    if CLASS_INFO:
         layout["top"].update(
             Group(
                 Align(classListTable, align="center", vertical="middle")
             )
         )
+    elif tagline:
+        figRenderer = Figlet(font="smslant", width=110)
+        renderText = Text.assemble(
+            (f"{figRenderer.renderText(f'{tagline}')}", "green"))
+
+        layout["top"].update(
+            Group(Align(renderText, align="center", vertical="middle")))
+    elif not CLASS_INFO:
+        figRenderer = Figlet(font="smslant", width=110)
+        renderText = Text.assemble((f"{figRenderer.renderText('Done with Classes')}", "green"))
+        layout["top"].update(
+            Group(Align(renderText, align="center", vertical="middle")))
+
     layout["middle"]["left"].update(
         Padding(
             Group(
@@ -212,5 +209,5 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
             Align(bottomRightComponents, align="right", vertical="bottom")
         )
 
-    # clear()
+    clear()
     print(layout)
