@@ -7,7 +7,7 @@ import yaml
 from rich import print
 from datetime import datetime
 from collections import OrderedDict
-from rich.progress import Progress
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeRemainingColumn, TimeElapsedColumn
 from win32gui import IsWindowVisible, GetWindowText, EnumWindows, ShowWindow, SetForegroundWindow, SystemParametersInfo
 import csv
 
@@ -179,12 +179,22 @@ def findImageTimeout(imageUrl: str, message: str, timeout: int = defaultTimeout,
     return (x, y)
 
 
-def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int = defaultTimeout, confidence: int = 0.95):
-    output = {}
+def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int = 30, confidence: int = 0.95):
     i = 0
 
-    with Progress(transient=True) as progress:
-        task = progress.add_task(f"{message}...", start=False, total=timeout)
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TimeElapsedColumn(),
+        TimeRemainingColumn(),
+        transient=True,
+        refresh_per_second=60,
+        speed_estimate_period=30,
+        expand=True
+    ) as progress:
+        task = progress.add_task(f"{message}...", total=timeout)
 
         while not progress.finished:
             if i <= timeout:
@@ -195,6 +205,7 @@ def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int
                     t2 = time.time() - t1
                     if x != -1 and y != -1:
                         pag.click(x, y)
+                        progress.stop_task(task)
                         progress.stop()
                         return {"error": False, "message": None, "coords": {"x": x, "y": y}}
                         break
@@ -205,16 +216,26 @@ def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int
                         i += amountToIncrease
                         progress.update(task, advance=amountToIncrease)
             else:
+                progress.stop_task(task)
                 progress.stop()
                 return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
 
 def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInput: str, timeout: int = defaultTimeout, confidence: int = 0.95):
-    output = {}
     i = 0
-
-    with Progress(transient=True) as progress:
-        task = progress.add_task(f"{message}...", start=False, total=timeout)
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TimeElapsedColumn(),
+        TimeRemainingColumn(),
+        transient=True,
+        refresh_per_second=60,
+        speed_estimate_period=30,
+        expand=True
+    ) as progress:
+        task = progress.add_task(f"{message}...", total=timeout)
 
         while not progress.finished:
             if i <= timeout:
@@ -227,6 +248,7 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
                         pag.click(x, y + 60)
                         pag.write(str(textToInput).replace(" ", ""))
                         pag.press("enter")
+                        progress.stop_task(task)
                         progress.stop()
                         return {"error": False, "message": None}
                     else:
@@ -236,6 +258,7 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
                         i += amountToIncrease
                         progress.update(task, advance=amountToIncrease)
             else:
+                progress.stop_task(task)
                 progress.stop()
                 return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
