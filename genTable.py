@@ -162,7 +162,7 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
         )
 
     # rendering components
-    if CLASS_INFO:
+    if CLASS_INFO and tagline == "":
         layout["top"].update(
             Group(
                 Align(classListTable, align="center", vertical="middle")
