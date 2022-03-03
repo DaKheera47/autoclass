@@ -84,8 +84,8 @@ def launchClass(className: str):
     #              MSGS["endedConfirmation"]["error"], timeout=15, confidence=0.8)
 
     waitForHost = findAndClick(["waitForHost.png"],
-                               MSGS["endedConfirmation"]["searching"],
-                               MSGS["endedConfirmation"]["error"], timeout=15, confidence=0.8)
+                               MSGS["waitForHost"]["searching"],
+                               MSGS["waitForHost"]["error"], timeout=15, confidence=0.8)
     if not waitForHost["error"]:
         pag.hotkey("alt", "f4")
 

@@ -142,6 +142,39 @@ def loadFiles():
     return SETUP, CLASS_INFO, COLORS
 
 
+def getConfigValue(name: str):
+    with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
+        try:
+            SETUP = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    if not os.path.exists(f"{CUR_PATH}/config/config.yaml"):
+        file = open(f"{CUR_PATH}/config/config.yaml", "w")
+        SAMPLE_CONFIG = [
+            {'description': 'Delay between every action taken',
+                'value': 0.8, 'name': 'delayBetweenActions'},
+            {'description': 'Percentage accuracy to match image',
+                'value': 0.99, 'name': 'globalConfidence'},
+            {'description': 'Minutes from end of class to attempt joining',
+                'value': 5, 'name': 'minsFromEndToJoin'},
+            {'description': 'Confirm before joining', 'value': False,
+                'name': 'requireConfirmationBeforeJoining'},
+            {'description': 'Confirm before leaving', 'value': False,
+                'name': 'requireConfirmationBeforeLeaving'},
+            {'description': 'Record meetings with OBS Studio',
+                'value': True, 'name': 'record'}
+        ]
+
+        yaml.dump(SAMPLE_CONFIG, file)
+        file.close()
+
+    for option in SETUP:
+        for key, value in option.items():
+            if value == name:
+                return option["value"]
+
+
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -197,7 +230,7 @@ def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int
         task = progress.add_task(f"{message}...", total=timeout)
 
         while not progress.finished:
-            if i <= timeout:
+            if i < timeout:
                 for imageUrl in imageUrls:
                     t1 = time.time()
                     x, y = findImage(imageUrl, confidence)
@@ -213,8 +246,12 @@ def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int
                         # calculating amount to increase based on time taken by image to attempt to find
                         amountToIncrease = (
                             len(imageUrls) * t2 / len(imageUrls))
-                        i += amountToIncrease
-                        progress.update(task, advance=amountToIncrease)
+                        if (i + amountToIncrease) <= timeout:
+                            i += amountToIncrease
+                            progress.update(task, advance=amountToIncrease)
+                        else:
+                            i = timeout
+                            break
             else:
                 progress.stop_task(task)
                 progress.stop()
@@ -238,7 +275,7 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
         task = progress.add_task(f"{message}...", total=timeout)
 
         while not progress.finished:
-            if i <= timeout:
+            if i < timeout:
                 for imageUrl in imageUrls:
                     t1 = time.time()
                     x, y = findImage(imageUrl, confidence)
@@ -255,8 +292,12 @@ def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInp
                         # calculating amount to increase based on time taken by image to attempt to find
                         amountToIncrease = (
                             len(imageUrls) * t2 / len(imageUrls))
-                        i += amountToIncrease
-                        progress.update(task, advance=amountToIncrease)
+                        if (i + amountToIncrease) <= timeout:
+                            i += amountToIncrease
+                            progress.update(task, advance=amountToIncrease)
+                        else:
+                            i = timeout
+                            break
             else:
                 progress.stop_task(task)
                 progress.stop()
@@ -342,36 +383,3 @@ def getNextClass():
 
         if CURR_TIME < CURR_CLASS["leave time"]:
             return {"class": CURR_CLASS["class"], "event": "Leaving", "timeTillNextEvent": timeToLeaving}
-
-
-def getConfigValue(name: str):
-    with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
-        try:
-            SETUP = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    if not os.path.exists(f"{CUR_PATH}/config/config.yaml"):
-        file = open(f"{CUR_PATH}/config/config.yaml", "w")
-        SAMPLE_CONFIG = [
-            {'description': 'Delay between every action taken',
-                'value': 0.8, 'name': 'delayBetweenActions'},
-            {'description': 'Percentage accuracy to match image',
-                'value': 0.99, 'name': 'globalConfidence'},
-            {'description': 'Minutes from end of class to attempt joining',
-                'value': 5, 'name': 'minsFromEndToJoin'},
-            {'description': 'Confirm before joining', 'value': False,
-                'name': 'requireConfirmationBeforeJoining'},
-            {'description': 'Confirm before leaving', 'value': False,
-                'name': 'requireConfirmationBeforeLeaving'},
-            {'description': 'Record meetings with OBS Studio',
-                'value': True, 'name': 'record'}
-        ]
-
-        yaml.dump(SAMPLE_CONFIG, file)
-        file.close()
-
-    for option in SETUP:
-        for key, value in option.items():
-            if value == name:
-                return option["value"]
