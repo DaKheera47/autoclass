@@ -16,7 +16,40 @@ cursor.hide()
 defaultTimeout = 600
 
 
-def loadFiles():
+def getConfigValue(name: str):
+    with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
+        try:
+            SETUP = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    if not os.path.exists(f"{CUR_PATH}/config/config.yaml"):
+        file = open(f"{CUR_PATH}/config/config.yaml", "w")
+        SAMPLE_CONFIG = [
+            {'description': 'Delay between every action taken',
+                'value': 0.8, 'name': 'delayBetweenActions'},
+            {'description': 'Percentage accuracy to match image',
+                'value': 0.99, 'name': 'globalConfidence'},
+            {'description': 'Minutes from end of class to attempt joining',
+                'value': 5, 'name': 'minsFromEndToJoin'},
+            {'description': 'Confirm before joining', 'value': False,
+                'name': 'requireConfirmationBeforeJoining'},
+            {'description': 'Confirm before leaving', 'value': False,
+                'name': 'requireConfirmationBeforeLeaving'},
+            {'description': 'Record meetings with OBS Studio',
+                'value': True, 'name': 'record'}
+        ]
+
+        yaml.dump(SAMPLE_CONFIG, file)
+        file.close()
+
+    for option in SETUP:
+        for key, value in option.items():
+            if value == name:
+                return option["value"]
+
+
+def loadFiles(prune: bool = getConfigValue("prune")):
     CURR_DAY_NUM = datetime.today().weekday()
 
     # create default settings if they dont exist already
@@ -124,7 +157,6 @@ def loadFiles():
             durationOfClass = str(leaveDatetime - joinDatetime)[:-3]
             time["duration"] = durationOfClass
 
-            prune = getConfigValue("prune")
             # converting twice removes date and leaves only time
             now = datetime.strptime(now.strftime("%H:%M"), "%H:%M")
             # dont add classes with 0 duration, to indicate no class
@@ -140,39 +172,6 @@ def loadFiles():
     CLASS_INFO = sorted(CLASS_INFO, key=lambda d: d['join time'])
 
     return SETUP, CLASS_INFO, COLORS
-
-
-def getConfigValue(name: str):
-    with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
-        try:
-            SETUP = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    if not os.path.exists(f"{CUR_PATH}/config/config.yaml"):
-        file = open(f"{CUR_PATH}/config/config.yaml", "w")
-        SAMPLE_CONFIG = [
-            {'description': 'Delay between every action taken',
-                'value': 0.8, 'name': 'delayBetweenActions'},
-            {'description': 'Percentage accuracy to match image',
-                'value': 0.99, 'name': 'globalConfidence'},
-            {'description': 'Minutes from end of class to attempt joining',
-                'value': 5, 'name': 'minsFromEndToJoin'},
-            {'description': 'Confirm before joining', 'value': False,
-                'name': 'requireConfirmationBeforeJoining'},
-            {'description': 'Confirm before leaving', 'value': False,
-                'name': 'requireConfirmationBeforeLeaving'},
-            {'description': 'Record meetings with OBS Studio',
-                'value': True, 'name': 'record'}
-        ]
-
-        yaml.dump(SAMPLE_CONFIG, file)
-        file.close()
-
-    for option in SETUP:
-        for key, value in option.items():
-            if value == name:
-                return option["value"]
 
 
 def clear():

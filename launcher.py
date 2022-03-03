@@ -57,7 +57,7 @@ def toggleRecording(event="start"):
 
 
 def launchClass(className: str):
-    SETUP, CLASS_INFO, _ = loadFiles()
+    SETUP, CLASS_INFO, _ = loadFiles(prune=False)
     pag.PAUSE = getConfigValue("delayBetweenActions")
 
     for i, cls in enumerate(CLASS_INFO):
@@ -193,9 +193,9 @@ def startLeaving(className):
 
 # if this file is ran directly
 if __name__ == '__main__':
-    SETUP, CLASS_INFO, _ = loadFiles()
+    SETUP, CLASS_INFO, _ = loadFiles(prune=False)
 
-    genTable(CLASS_INFO, tagline="Choose a class from the table above", footer=False)
+    genTable(CLASS_INFO, footer=False)
     cls = input(f"Choose your code here ==>")
     className = CLASS_INFO[int(cls) - 1]["class"]
     launchClass(className)
