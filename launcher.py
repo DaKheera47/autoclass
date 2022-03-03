@@ -32,6 +32,10 @@ MSGS = {
         "searching": "Locate end free meeting button",
         "error": "There's no confirmation required!",
     },
+    "waitForHost": {
+        "searching": "Checking previous class",
+        "error": "No previously running class",
+    },
 }
 
 
@@ -75,9 +79,15 @@ def launchClass(className: str):
     pag.write("zoom")
     pag.press("enter")
 
-    findAndClick(["meetingHasEndedConfirmation.png"],
-                 MSGS["endedConfirmation"]["searching"],
-                 MSGS["endedConfirmation"]["error"], timeout=15, confidence=0.8)
+    # findAndClick(["meetingHasEndedConfirmation.png"],
+    #              MSGS["endedConfirmation"]["searching"],
+    #              MSGS["endedConfirmation"]["error"], timeout=15, confidence=0.8)
+
+    waitForHost = findAndClick(["waitForHost.png"],
+                               MSGS["endedConfirmation"]["searching"],
+                               MSGS["endedConfirmation"]["error"], timeout=15, confidence=0.8)
+    if not waitForHost["error"]:
+        pag.hotkey("alt", "f4")
 
     joinBtn = findAndClick(["joinUnsigned.PNG", "joinBtn.png"],
                            MSGS["join"]["searching"],
@@ -88,16 +98,14 @@ def launchClass(className: str):
     # enter code into meeting id field
     joinMeeting = findAndInputText(["joinMeeting.PNG"],
                                    MSGS["enterCode"]["searching"],
-                                   MSGS["enterCode"]["error"], code,
-                                   confidence=getConfigValue("globalConfidence"))
+                                   MSGS["enterCode"]["error"], code)
     if joinMeeting["error"]:
         return joinMeeting
 
     # enter password into password field
     joinPassword = findAndInputText(["enterMeetingPw.png"],
                                     MSGS["enterPW"]["searching"],
-                                    MSGS["enterPW"]["error"], password,
-                                    confidence=getConfigValue("globalConfidence"))
+                                    MSGS["enterPW"]["error"], password)
     if joinPassword["error"]:
         return joinPassword
 

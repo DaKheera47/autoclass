@@ -179,7 +179,7 @@ def findImageTimeout(imageUrl: str, message: str, timeout: int = defaultTimeout,
     return (x, y)
 
 
-def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int = 30, confidence: int = 0.95):
+def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int = 30, confidence: int = getConfigValue("globalConfidence")):
     i = 0
 
     with Progress(
@@ -221,7 +221,7 @@ def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int
                 return {"error": True, "message": f"Timed Out: {errorMessage}"}
 
 
-def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInput: str, timeout: int = defaultTimeout, confidence: int = 0.95):
+def findAndInputText(imageUrls: list, message: str, errorMessage: str, textToInput: str, timeout: int = defaultTimeout, confidence: int = getConfigValue("globalConfidence")):
     i = 0
     with Progress(
         SpinnerColumn(),
