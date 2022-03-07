@@ -15,33 +15,54 @@ CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 cursor.hide()
 defaultTimeout = 600
 
+SAMPLE_CLASS = [
+    ["Class", "Day", "Meeting ID", "Meeting Password",
+     "Join Time", "Leave Time"],
+    ["Test Class", "Monday", "Update Me!", "Update Me!", "00:00", "00:01"],
+    ["Test Class", "Tuesday", "Update Me!",
+     "Update Me!", "00:00", "00:01"],
+    ["Test Class", "Wednesday", "Update Me!",
+     "Update Me!", "00:00", "00:01"],
+    ["Test Class", "Thursday", "Update Me!",
+     "Update Me!", "00:00", "00:01"],
+    ["Test Class", "Friday", "Update Me!", "Update Me!", "00:00", "00:01"],
+    ["Test Class", "Saturday", "Update Me!",
+     "Update Me!", "00:00", "00:01"],
+    ["Test Class", "Sunday", "Update Me!", "Update Me!", "00:00", "00:01"],
+]
+
+SAMPLE_CONFIG = [
+    {'description': 'Delay between every action taken',
+     'value': 0.8, 'name': 'delayBetweenActions'},
+    {'description': 'Percentage accuracy to match image',
+     'value': 0.99, 'name': 'globalConfidence'},
+    {'description': 'Minutes from end of class to attempt joining',
+     'value': 5, 'name': 'minsFromEndToJoin'},
+    {'description': 'Confirm before joining', 'value': False,
+     'name': 'requireConfirmationBeforeJoining'},
+    {'description': 'Confirm before leaving', 'value': False,
+     'name': 'requireConfirmationBeforeLeaving'},
+    {'description': 'Record meetings with OBS Studio',
+     'value': True, 'name': 'record'},
+    {'description': 'Prune past classes of the day',
+     'value': True, 'name': 'prune'},
+    {'description': 'Fixed late-ness in joining time',
+     'value': 0, 'name': 'lateness'},
+]
+
+SAMPLE_STYLES = {
+    "text-color": "white",
+    "future": "cyan",
+    "past": "bright_black",
+    "enabled": "green",
+    "disabled": "red",
+    "highlight": "cyan",
+}
+
 
 def getConfigValue(name: str):
-    with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
-        try:
-            SETUP = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    if not os.path.exists(f"{CUR_PATH}/config/config.yaml"):
-        file = open(f"{CUR_PATH}/config/config.yaml", "w")
-        SAMPLE_CONFIG = [
-            {'description': 'Delay between every action taken',
-                'value': 0.8, 'name': 'delayBetweenActions'},
-            {'description': 'Percentage accuracy to match image',
-                'value': 0.99, 'name': 'globalConfidence'},
-            {'description': 'Minutes from end of class to attempt joining',
-                'value': 5, 'name': 'minsFromEndToJoin'},
-            {'description': 'Confirm before joining', 'value': False,
-                'name': 'requireConfirmationBeforeJoining'},
-            {'description': 'Confirm before leaving', 'value': False,
-                'name': 'requireConfirmationBeforeLeaving'},
-            {'description': 'Record meetings with OBS Studio',
-                'value': True, 'name': 'record'}
-        ]
-
-        yaml.dump(SAMPLE_CONFIG, file)
-        file.close()
+    SETUP = getFileData(f"{CUR_PATH}/config/config.yaml",
+                        SAMPLE_CONFIG, "yaml")
 
     for option in SETUP:
         for key, value in option.items():
@@ -49,98 +70,77 @@ def getConfigValue(name: str):
                 return option["value"]
 
 
-def loadFiles(prune: bool = getConfigValue("prune")):
+def getFileData(path: str, data: dict, fileType: str):
+    # create folder
+    os.makedirs("./config", exist_ok=True)
+
+    if not os.path.exists(path):
+        if fileType == "yaml":
+            with open(path, "w") as f:
+                yaml.dump(data, f)
+            return data
+
+        if fileType == "csv":
+            with open(path, "w") as csv_file:
+                writer = csv.writer(csv_file)
+
+                for i, value in enumerate(data):
+                    writer.writerow(value)
+
+                timings = []
+                with open(path, "r") as csv_file:
+                    csv_reader = csv.DictReader(csv_file)
+                    line_count = 0
+                    for row in csv_reader:
+                        if line_count == 0:
+                            line_count += 1
+                        timings.append(row)
+                        line_count += 1
+                return timings
+    # if path exists
+    else:
+        if fileType == "yaml":
+            # read
+            with open(path, 'r') as stream:
+                try:
+                    return yaml.safe_load(stream)
+                except yaml.YAMLError as exc:
+                    print(exc)
+
+        if fileType == "csv":
+            # read
+            timings = []
+            with open(path, "r") as csv_file:
+                csv_reader = csv.DictReader(csv_file)
+                line_count = 0
+                for row in csv_reader:
+                    if line_count == 0:
+                        line_count += 1
+                    timings.append(row)
+                    line_count += 1
+            return timings
+
+
+def loadFiles(prune: bool = None):
+    prune = getConfigValue("prune")
     CURR_DAY_NUM = datetime.today().weekday()
 
     # create default settings if they dont exist already
-    if not os.path.exists(f"{CUR_PATH}/config/classes.csv"):
-        csv_file = open(f"{CUR_PATH}/config/classes.csv", "w")
-        writer = csv.writer(csv_file)
-
-        SAMPLE_CLASS = [
-            ["Class", "Day", "Meeting ID", "Meeting Password",
-             "Join Time", "Leave Time"],
-            ["Test Class", "Monday", "Update Me!", "Update Me!", "00:00", "00:01"],
-            ["Test Class", "Tuesday", "Update Me!",
-             "Update Me!", "00:00", "00:01"],
-            ["Test Class", "Wednesday", "Update Me!",
-             "Update Me!", "00:00", "00:01"],
-            ["Test Class", "Thursday", "Update Me!",
-             "Update Me!", "00:00", "00:01"],
-            ["Test Class", "Friday", "Update Me!", "Update Me!", "00:00", "00:01"],
-            ["Test Class", "Saturday", "Update Me!",
-             "Update Me!", "00:00", "00:01"],
-            ["Test Class", "Sunday", "Update Me!", "Update Me!", "00:00", "00:01"],
-        ]
-
-        for i, value in enumerate(SAMPLE_CLASS):
-            writer.writerow(value)
-
-        csv_file.close()
-
-    if not os.path.exists(f"{CUR_PATH}/config/config.yaml"):
-        file = open(f"{CUR_PATH}/config/config.yaml", "w")
-        SAMPLE_CONFIG = [
-            {'description': 'Delay between every action taken',
-                'value': 0.8, 'name': 'delayBetweenActions'},
-            {'description': 'Percentage accuracy to match image',
-                'value': 0.99, 'name': 'globalConfidence'},
-            {'description': 'Minutes from end of class to attempt joining',
-                'value': 5, 'name': 'minsFromEndToJoin'},
-            {'description': 'Confirm before joining', 'value': False,
-                'name': 'requireConfirmationBeforeJoining'},
-            {'description': 'Confirm before leaving', 'value': False,
-                'name': 'requireConfirmationBeforeLeaving'},
-            {'description': 'Record meetings with OBS Studio',
-                'value': True, 'name': 'record'}
-        ]
-
-        yaml.dump(SAMPLE_CONFIG, file)
-        file.close()
-
+    TIMINGS = getFileData(
+        f"{CUR_PATH}/config/classes.csv", SAMPLE_CLASS, "csv")
+    SETUP = getFileData(f"{CUR_PATH}/config/config.yaml",
+                        SAMPLE_CONFIG, "yaml")
     # https://rich.readthedocs.io/en/stable/appendix/colors.html
-    if not os.path.exists(f"{CUR_PATH}/config/styles.yaml"):
-        file = open(f"{CUR_PATH}/config/styles.yaml", "w")
-        SAMPLE_CONFIG = {
-            "text-color": "white",
-            "future": "cyan",
-            "past": "bright_black",
-            "enabled": "green",
-            "disabled": "red",
-            "highlight": "cyan",
-        }
-
-        yaml.dump(SAMPLE_CONFIG, file)
-        file.close()
-
-    # importing external files
-    with open(f"{CUR_PATH}/config/config.yaml", 'r') as stream:
-        try:
-            SETUP = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    with open(f"{CUR_PATH}/config/styles.yaml", 'r') as stream:
-        try:
-            COLORS = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    with open(f"{CUR_PATH}/config/classes.csv", 'r') as csv_file:
-        timings = []
-        csv_reader = csv.DictReader(csv_file)
-        line_count = 0
-        for row in csv_reader:
-            if line_count == 0:
-                line_count += 1
-            timings.append(row)
-            line_count += 1
+    COLORS = getFileData(
+        f"{CUR_PATH}/config/styles.yaml", SAMPLE_STYLES, "yaml")
 
     # cleaning up collected data
     now = datetime.now()
     TODAY = now.strftime("%A")
     CLASS_INFO = []
-    for i, time in enumerate(timings):
+
+    # adding correct data to CLASS_INFO
+    for i, time in enumerate(TIMINGS):
         # converting keys to lowercase
         time = {k.lower(): v for k, v in time.items()}
 
