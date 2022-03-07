@@ -171,13 +171,13 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
     elif tagline:
         figRenderer = Figlet(font="smslant", width=110)
         renderText = Text.assemble(
-            (f"{figRenderer.renderText(f'{tagline}')}", "green"))
+            (f"{figRenderer.renderText(f'{tagline}')}", COLORS["highlight"]))
 
         layout["top"].update(
             Group(Align(renderText, align="center", vertical="middle")))
     elif not CLASS_INFO:
         figRenderer = Figlet(font="smslant", width=110)
-        renderText = Text.assemble((f"{figRenderer.renderText('Done with Classes')}", "green"))
+        renderText = Text.assemble((f"{figRenderer.renderText('Done with Classes')}", COLORS["highlight"]))
         layout["top"].update(
             Group(Align(renderText, align="center", vertical="middle")))
 
