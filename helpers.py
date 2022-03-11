@@ -5,13 +5,14 @@ import pyautogui as pag
 import json
 import yaml
 from rich import print
-from datetime import datetime
+from datetime import datetime, timedelta
 from collections import OrderedDict
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeRemainingColumn, TimeElapsedColumn
 from win32gui import IsWindowVisible, GetWindowText, EnumWindows, ShowWindow, SetForegroundWindow, SystemParametersInfo
 import csv
 
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
+CUR_PATH_CONFIG = f"{CUR_PATH}/config"
 cursor.hide()
 defaultTimeout = 600
 
@@ -61,8 +62,7 @@ SAMPLE_STYLES = {
 
 
 def getConfigValue(name: str):
-    SETUP = getFileData(f"{CUR_PATH}/config/config.yaml",
-                        SAMPLE_CONFIG, "yaml")
+    SETUP = getFileData(f"{CUR_PATH_CONFIG}/config.yaml", SAMPLE_CONFIG, "yaml")
 
     for option in SETUP:
         for key, value in option.items():
@@ -72,7 +72,7 @@ def getConfigValue(name: str):
 
 def getFileData(path: str, data: dict, fileType: str):
     # create folder
-    os.makedirs("./config", exist_ok=True)
+    os.makedirs(f"{CUR_PATH}/config", exist_ok=True)
 
     if not os.path.exists(path):
         if fileType == "yaml":
@@ -126,13 +126,10 @@ def loadFiles(prune: bool = None):
     CURR_DAY_NUM = datetime.today().weekday()
 
     # create default settings if they dont exist already
-    TIMINGS = getFileData(
-        f"{CUR_PATH}/config/classes.csv", SAMPLE_CLASS, "csv")
-    SETUP = getFileData(f"{CUR_PATH}/config/config.yaml",
-                        SAMPLE_CONFIG, "yaml")
+    TIMINGS = getFileData(f"{CUR_PATH_CONFIG}/classes.csv", SAMPLE_CLASS, "csv")
+    SETUP = getFileData(f"{CUR_PATH_CONFIG}/config.yaml", SAMPLE_CONFIG, "yaml")
     # https://rich.readthedocs.io/en/stable/appendix/colors.html
-    COLORS = getFileData(
-        f"{CUR_PATH}/config/styles.yaml", SAMPLE_STYLES, "yaml")
+    COLORS = getFileData(f"{CUR_PATH_CONFIG}/styles.yaml", SAMPLE_STYLES, "yaml")
 
     # cleaning up collected data
     now = datetime.now()
@@ -145,17 +142,21 @@ def loadFiles(prune: bool = None):
         time = {k.lower(): v for k, v in time.items()}
 
         if time["day"] == TODAY:
+            delta = timedelta(minutes=int(getConfigValue("lateness")))
+
             # converting string time to datetime
+            joinDatetimeDelta = datetime.strptime(time["join time"], "%H:%M") + delta
             joinDatetime = datetime.strptime(time["join time"], "%H:%M")
             leaveDatetime = datetime.strptime(time["leave time"], "%H:%M")
 
             # converting datetime object to correct string format ie 09:40
-            time["join time"] = joinDatetime.strftime("%H:%M")
+            time["join time"] = joinDatetimeDelta.strftime("%H:%M")
             time["leave time"] = leaveDatetime.strftime("%H:%M")
 
             # setting duration
+            durationOfClassDelta = str(leaveDatetime - joinDatetimeDelta)[:-3]
             durationOfClass = str(leaveDatetime - joinDatetime)[:-3]
-            time["duration"] = durationOfClass
+            time["duration"] = durationOfClassDelta
 
             # converting twice removes date and leaves only time
             now = datetime.strptime(now.strftime("%H:%M"), "%H:%M")
@@ -170,7 +171,6 @@ def loadFiles(prune: bool = None):
 
     # sort according to joinTime
     CLASS_INFO = sorted(CLASS_INFO, key=lambda d: d['join time'])
-
     return SETUP, CLASS_INFO, COLORS
 
 
