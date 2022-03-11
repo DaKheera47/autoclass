@@ -166,9 +166,6 @@ def startLeaving(className):
     CURR_DAY_NUM = datetime.today().weekday()
     isConfirmed = "OK"
 
-    # end recording
-    toggleRecording(event="end")
-
     if getConfigValue("requireConfirmationBeforeLeaving"):
         isConfirmed = pag.confirm(
             text=f'Are you sure you want to leave the {className["class"]} class?',
@@ -177,6 +174,7 @@ def startLeaving(className):
         )
 
     if isConfirmed == "OK":
+        # close meeting
         isMeetingRunning = bringWindowToFocus("Zoom Meeting")
         if isMeetingRunning:
             response = findAndClick(["leaveBtn.png"], "Attempting to leave meeting",
@@ -189,6 +187,9 @@ def startLeaving(className):
 
         else:
             log("No Running Meeting", False)
+
+        # end recording
+        toggleRecording(event="end")
 
 
 # if this file is ran directly
