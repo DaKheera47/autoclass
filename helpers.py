@@ -14,7 +14,7 @@ import csv
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 CUR_PATH_CONFIG = f"{CUR_PATH}/config"
 cursor.hide()
-defaultTimeout = 600
+defaultTimeout = 1 * 60
 
 SAMPLE_CLASS = [
     ["Class", "Day", "Meeting ID", "Meeting Password",
@@ -37,8 +37,6 @@ SAMPLE_CONFIG = [
      'value': 0.8, 'name': 'delayBetweenActions'},
     {'description': 'Percentage accuracy to match image',
      'value': 0.99, 'name': 'globalConfidence'},
-    {'description': 'Minutes from end of class to attempt joining',
-     'value': 5, 'name': 'minsFromEndToJoin'},
     {'description': 'Confirm before joining', 'value': False,
      'name': 'requireConfirmationBeforeJoining'},
     {'description': 'Confirm before leaving', 'value': False,
@@ -62,7 +60,8 @@ SAMPLE_STYLES = {
 
 
 def getConfigValue(name: str):
-    SETUP = getFileData(f"{CUR_PATH_CONFIG}/config.yaml", SAMPLE_CONFIG, "yaml")
+    SETUP = getFileData(f"{CUR_PATH_CONFIG}/config.yaml",
+                        SAMPLE_CONFIG, "yaml")
 
     for option in SETUP:
         for key, value in option.items():
@@ -126,10 +125,13 @@ def loadFiles(prune: bool = None):
     CURR_DAY_NUM = datetime.today().weekday()
 
     # create default settings if they dont exist already
-    TIMINGS = getFileData(f"{CUR_PATH_CONFIG}/classes.csv", SAMPLE_CLASS, "csv")
-    SETUP = getFileData(f"{CUR_PATH_CONFIG}/config.yaml", SAMPLE_CONFIG, "yaml")
+    TIMINGS = getFileData(
+        f"{CUR_PATH_CONFIG}/classes.csv", SAMPLE_CLASS, "csv")
+    SETUP = getFileData(f"{CUR_PATH_CONFIG}/config.yaml",
+                        SAMPLE_CONFIG, "yaml")
     # https://rich.readthedocs.io/en/stable/appendix/colors.html
-    COLORS = getFileData(f"{CUR_PATH_CONFIG}/styles.yaml", SAMPLE_STYLES, "yaml")
+    COLORS = getFileData(
+        f"{CUR_PATH_CONFIG}/styles.yaml", SAMPLE_STYLES, "yaml")
 
     # cleaning up collected data
     now = datetime.now()
@@ -145,7 +147,8 @@ def loadFiles(prune: bool = None):
             delta = timedelta(minutes=int(getConfigValue("lateness")))
 
             # converting string time to datetime
-            joinDatetimeDelta = datetime.strptime(time["join time"], "%H:%M") + delta
+            joinDatetimeDelta = datetime.strptime(
+                time["join time"], "%H:%M") + delta
             joinDatetime = datetime.strptime(time["join time"], "%H:%M")
             leaveDatetime = datetime.strptime(time["leave time"], "%H:%M")
 
@@ -211,7 +214,7 @@ def findImageTimeout(imageUrl: str, message: str, timeout: int = defaultTimeout,
     return (x, y)
 
 
-def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int = 30, confidence: int = getConfigValue("globalConfidence")):
+def findAndClick(imageUrls: list, message: str, errorMessage: str,  timeout: int = defaultTimeout, confidence: int = getConfigValue("globalConfidence")):
     i = 0
 
     with Progress(
@@ -382,3 +385,12 @@ def getNextClass():
 
         if CURR_TIME < CURR_CLASS["leave time"]:
             return {"class": CURR_CLASS["class"], "event": "Leaving", "timeTillNextEvent": timeToLeaving}
+
+
+def resetPrograms(procs: list[str] = ["Zoom.exe", "obs64.exe"]):
+    import psutil
+
+    for proc in psutil.process_iter():
+        for process in procs:
+            if proc.name() == process:
+                proc.kill()

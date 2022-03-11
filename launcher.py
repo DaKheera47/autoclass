@@ -5,7 +5,7 @@ import yaml
 import sys
 import json
 from datetime import datetime, timedelta
-from helpers import findAndClick, findAndInputText, loadFiles, clear, bringWindowToFocus, log, getConfigValue
+from helpers import findAndClick, findAndInputText, loadFiles, clear, bringWindowToFocus, log, getConfigValue, resetPrograms
 from genTable import genTable
 import cursor
 cursor.hide()
@@ -79,10 +79,6 @@ def launchClass(className: str):
     pag.write("zoom")
     pag.press("enter")
 
-    # findAndClick(["meetingHasEndedConfirmation.png"],
-    #              MSGS["endedConfirmation"]["searching"],
-    #              MSGS["endedConfirmation"]["error"], timeout=15, confidence=0.8)
-
     waitForHost = findAndClick(["waitForHost.png"],
                                MSGS["waitForHost"]["searching"],
                                MSGS["waitForHost"]["error"], timeout=15, confidence=0.8)
@@ -109,28 +105,10 @@ def launchClass(className: str):
     if joinPassword["error"]:
         return joinPassword
 
-    # INFO: extremely scuffed solution. pls fix
-    # converting string time to datetime
-    duration = datetime.strptime(cls["duration"], "%H:%M")
-    deltaFiveMins = timedelta(minutes=int(getConfigValue("minsFromEndToJoin")))
-
-    # calculating how long to check for
-    timeToCheck = duration - deltaFiveMins
-
-    # getting individual values
-    hrs = int(timeToCheck.strftime("%H"))
-    mins = int(timeToCheck.strftime("%M"))
-    secs = int(timeToCheck.strftime("%S"))
-
-    # converting to seconds
-    timeToCheck = (hrs * 3600) + (mins * 60) + (secs * 1)
-
     # join with computer audio
     joinWithCompAudioBtn = findAndClick(["joinWithComputerAudioBtn.PNG"],
                                         MSGS["compAudio"]["searching"],
-                                        MSGS["compAudio"]["error"],
-                                        timeout=timeToCheck,
-                                        confidence=getConfigValue("globalConfidence"))
+                                        MSGS["compAudio"]["error"], timeout=3 * 60)
     if joinWithCompAudioBtn["error"]:
         return joinWithCompAudioBtn
 
@@ -155,9 +133,15 @@ def startLaunching(className):
         )
 
     if isConfirmed == "OK":
-        status = launchClass(className["class"])
-        log(f'{className["class"]} - {status["message"]}',
-            not bool(status["error"]))
+        while True:
+            status = launchClass(className["class"])
+            if status["error"]:
+                resetPrograms(["Zoom.exe"])
+                continue
+            else:
+                out = f'{className["class"]} - {status["message"]}'
+                log(out, not bool(status["error"]))
+                break
 
 
 def startLeaving(className):
@@ -198,5 +182,5 @@ if __name__ == '__main__':
 
     genTable(CLASS_INFO, footer=False)
     cls = input(f"Choose your code here ==>")
-    className = CLASS_INFO[int(cls) - 1]["class"]
-    launchClass(className)
+    className = CLASS_INFO[int(cls) - 1]
+    startLaunching(className)
