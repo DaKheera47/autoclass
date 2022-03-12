@@ -4,11 +4,8 @@ import time
 import pyautogui as pag
 import json
 import yaml
-from rich import print
 from datetime import datetime, timedelta
-from collections import OrderedDict
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeRemainingColumn, TimeElapsedColumn
-from win32gui import IsWindowVisible, GetWindowText, EnumWindows, ShowWindow, SetForegroundWindow, SystemParametersInfo
 import csv
 
 CUR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -64,7 +61,7 @@ def getConfigValue(name: str):
                         SAMPLE_CONFIG, "yaml")
 
     for option in SETUP:
-        for key, value in option.items():
+        for _, value in option.items():
             if value == name:
                 return option["value"]
 
@@ -122,7 +119,6 @@ def getFileData(path: str, data: dict, fileType: str):
 
 def loadFiles(prune: bool = None):
     prune = getConfigValue("prune")
-    CURR_DAY_NUM = datetime.today().weekday()
 
     # create default settings if they dont exist already
     TIMINGS = getFileData(
@@ -318,8 +314,7 @@ def log(message: str, success: bool):
         try:
             os.makedirs(os.path.dirname(f"{CUR_PATH}/out/{fileName}"))
         except OSError as exc:  # Guard against race condition
-            if exc.errno != errno.EEXIST:
-                raise
+            pass
 
     # making new classes file if it doesnt already exist
     if not os.path.exists(f"{CUR_PATH}/out/{fileName}"):
@@ -350,18 +345,29 @@ def log(message: str, success: bool):
 
 
 def bringWindowToFocus(partial_window_name):
-    def window_enum_handler(hwnd, resultList):
-        if IsWindowVisible(hwnd) and GetWindowText(hwnd) != '':
-            resultList.append((hwnd, GetWindowText(hwnd)))
-    # SystemParametersInfo(8193, 0, 2 | 1)
-    handles = []
-    EnumWindows(window_enum_handler, handles)
-    for i in handles:
-        if str(partial_window_name).upper() in str(i[1]).upper():
-            ShowWindow(i[0], 3)
-            SetForegroundWindow(i[0])
-            return True
-    return False
+    partial_window_name = partial_window_name.lower()
+    import sys
+    if sys.platform in ['Windows', 'win32', 'cygwin']:
+        from win32gui import IsWindowVisible, GetWindowText, EnumWindows, ShowWindow, SetForegroundWindow, SystemParametersInfo    
+        def window_enum_handler(hwnd, resultList):
+            if IsWindowVisible(hwnd) and GetWindowText(hwnd) != '':
+                resultList.append((hwnd, GetWindowText(hwnd)))
+        handles = []
+        EnumWindows(window_enum_handler, handles)
+        for i in handles:
+            if str(partial_window_name).upper() in str(i[1]).upper():
+                ShowWindow(i[0], 3)
+                SetForegroundWindow(i[0])
+                return True
+        return False
+
+    elif sys.platform in ['linux', 'linux2']:
+        # linux
+        for program in os.popen("wmctrl -l").read().split("\n"):
+            if partial_window_name in program.lower():
+                os.popen(f"wmctrl -a {partial_window_name}")
+                return True
+        return False
 
 
 def differenceNowToTime(time1):
@@ -387,10 +393,10 @@ def getNextClass():
             return {"class": CURR_CLASS["class"], "event": "Leaving", "timeTillNextEvent": timeToLeaving}
 
 
-def resetPrograms(procs: list[str] = ["Zoom.exe", "obs64.exe"]):
+def resetPrograms(procs: list = ["Zoom", "obs64"]):
     import psutil
 
     for proc in psutil.process_iter():
         for process in procs:
-            if proc.name() == process:
+            if process.lower() in proc.name().lower():
                 proc.kill()
