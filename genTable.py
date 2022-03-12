@@ -109,7 +109,8 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
                          style=COLORS["text-color"])
 
         for option in SETUP:
-            value = Text.assemble((str(option["value"]), COLORS["text-color"]))
+            value = Text.assemble(
+                (f'{option["value"]} {option["suffix"]}', COLORS["text-color"]))
 
             if option["value"] == True:
                 value = Text.assemble(
@@ -177,7 +178,8 @@ def genTable(CLASS_INFO: list, leftMdx: str = leftMdx, footer: bool = True, tagl
             Group(Align(renderText, align="center", vertical="middle")))
     elif not CLASS_INFO:
         figRenderer = Figlet(font="smslant", width=110)
-        renderText = Text.assemble((f"{figRenderer.renderText('Done with Classes')}", COLORS["highlight"]))
+        renderText = Text.assemble(
+            (f"{figRenderer.renderText('Done with Classes')}", COLORS["highlight"]))
         layout["top"].update(
             Group(Align(renderText, align="center", vertical="middle")))
 

@@ -31,19 +31,21 @@ SAMPLE_CLASS = [
 
 SAMPLE_CONFIG = [
     {'description': 'Delay between every action taken',
-     'value': 0.8, 'name': 'delayBetweenActions'},
+     'value': 0.8, 'name': 'delayBetweenActions', "suffix": "s"},
     {'description': 'Percentage accuracy to match image',
-     'value': 0.99, 'name': 'globalConfidence'},
+     'value': 0.99, 'name': 'globalConfidence', "suffix": "%"},
     {'description': 'Confirm before joining', 'value': False,
-     'name': 'requireConfirmationBeforeJoining'},
+     'name': 'requireConfirmationBeforeJoining', "suffix": ""},
     {'description': 'Confirm before leaving', 'value': False,
-     'name': 'requireConfirmationBeforeLeaving'},
+     'name': 'requireConfirmationBeforeLeaving', "suffix": ""},
     {'description': 'Record meetings with OBS Studio',
-     'value': True, 'name': 'record'},
+     'value': True, 'name': 'record', "suffix": ""},
     {'description': 'Prune past classes of the day',
-     'value': True, 'name': 'prune'},
+     'value': True, 'name': 'prune', "suffix": ""},
     {'description': 'Fixed late-ness in joining time',
-     'value': 0, 'name': 'lateness'},
+     'value': 0, 'name': 'lateness', "suffix": "mins"},
+    {'description': 'Time from end to keep joining',
+     'value': 10, 'name': 'timeFromEndToCheck', "suffix": "mins"},
 ]
 
 SAMPLE_STYLES = {
