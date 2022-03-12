@@ -1,6 +1,7 @@
 import pyautogui as pag
 import time
 import os
+from datetime import timedelta, datetime
 from helpers import findAndClick, findAndInputText, loadFiles, bringWindowToFocus, log, getConfigValue, resetPrograms
 from genTable import genTable
 import cursor
@@ -126,8 +127,14 @@ def startLaunching(className):
             buttons=['OK', 'Cancel']
         )
 
+    delta = timedelta(minutes=int(getConfigValue("timeFromEndToCheck")))
+    delta = datetime.strptime(className["leave time"], "%H:%M") - delta
+
     if isConfirmed == "OK":
-        while True:
+        now = datetime.now()
+        nowFormatted = datetime.strptime(now.strftime("%H:%M"), "%H:%M")
+
+        while nowFormatted > delta:
             status = launchClass(className["class"])
             if status["error"]:
                 resetPrograms()
