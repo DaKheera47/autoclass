@@ -1,11 +1,7 @@
 import pyautogui as pag
 import time
 import os
-import yaml
-import sys
-import json
-from datetime import datetime, timedelta
-from helpers import findAndClick, findAndInputText, loadFiles, clear, bringWindowToFocus, log, getConfigValue, resetPrograms
+from helpers import findAndClick, findAndInputText, loadFiles, bringWindowToFocus, log, getConfigValue, resetPrograms
 from genTable import genTable
 import cursor
 cursor.hide()
@@ -57,7 +53,7 @@ def toggleRecording(event="start"):
 
 
 def launchClass(className: str):
-    SETUP, CLASS_INFO, _ = loadFiles(prune=False)
+    _, CLASS_INFO, _ = loadFiles(prune=False)
     pag.PAUSE = getConfigValue("delayBetweenActions")
 
     for i, cls in enumerate(CLASS_INFO):
@@ -66,7 +62,6 @@ def launchClass(className: str):
             genTable([cls], footer=False, tagline=f"Now Launching {className}")
             code = cls["meeting id"]
             password = cls["meeting password"]
-            duration = cls["duration"]
 
     if getConfigValue("record"):
         # start recording
@@ -81,18 +76,18 @@ def launchClass(className: str):
 
     waitForHost = findAndClick(["waitForHost.png"],
                                MSGS["waitForHost"]["searching"],
-                               MSGS["waitForHost"]["error"], timeout=15, confidence=0.8)
+                               MSGS["waitForHost"]["error"], timeout=5, confidence=0.8)
     if not waitForHost["error"]:
         pag.hotkey("alt", "f4")
 
-    joinBtn = findAndClick(["joinUnsigned.PNG", "joinBtn.png"],
+    joinBtn = findAndClick(["joinUnsigned.png", "joinBtn.png"],
                            MSGS["join"]["searching"],
-                           MSGS["join"]["error"], confidence=0.99)
+                           MSGS["join"]["error"], confidence=0.9)
     if joinBtn["error"]:
         return joinBtn
 
     # enter code into meeting id field
-    joinMeeting = findAndInputText(["joinMeeting.PNG"],
+    joinMeeting = findAndInputText(["joinMeeting.png"],
                                    MSGS["enterCode"]["searching"],
                                    MSGS["enterCode"]["error"], code)
     if joinMeeting["error"]:
@@ -106,7 +101,7 @@ def launchClass(className: str):
         return joinPassword
 
     # join with computer audio
-    joinWithCompAudioBtn = findAndClick(["joinWithComputerAudioBtn.PNG"],
+    joinWithCompAudioBtn = findAndClick(["joinWithComputerAudioBtn.png"],
                                         MSGS["compAudio"]["searching"],
                                         MSGS["compAudio"]["error"], timeout=3 * 60)
     if joinWithCompAudioBtn["error"]:
@@ -123,7 +118,6 @@ def launchClass(className: str):
 
 def startLaunching(className):
     # if confirmation is required
-    SETUP, CLASS_INFO, _ = loadFiles()
     isConfirmed = "OK"
     if getConfigValue("requireConfirmationBeforeJoining"):
         isConfirmed = pag.confirm(
@@ -136,7 +130,7 @@ def startLaunching(className):
         while True:
             status = launchClass(className["class"])
             if status["error"]:
-                resetPrograms(["Zoom.exe"])
+                resetPrograms()
                 continue
             else:
                 out = f'{className["class"]} - {status["message"]}'
@@ -145,9 +139,6 @@ def startLaunching(className):
 
 
 def startLeaving(className):
-    SETUP, CLASS_INFO, _ = loadFiles()
-    CURR_TIME = datetime.now().strftime("%H:%M")
-    CURR_DAY_NUM = datetime.today().weekday()
     isConfirmed = "OK"
 
     if getConfigValue("requireConfirmationBeforeLeaving"):
